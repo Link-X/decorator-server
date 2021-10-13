@@ -7,7 +7,7 @@ export declare const isConstructor: (val: string) => boolean;
  */
 export declare function getParamNames(func: any): string[];
 export declare const mapRouter: (instance: any) => metaType.routerMetaList;
-export declare const assemble: (cls: any) => {
+export declare const assemble: (cls: any, map: any) => {
     base: any;
     controller: any;
     router: metaType.routerMetaList;

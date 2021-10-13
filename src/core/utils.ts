@@ -86,9 +86,7 @@ const getObjectDef = (cls: any) => {
   return Reflect.getMetadata(OBJ_DEF_CLS, cls) 
 }
 
-const provideGroup = new Map();
-
-export const assemble = (cls: any) => {
+export const assemble = (cls: any, map: any) => {
   const base = getBase(cls);
   if (!(base && base.id)) {
     return;
@@ -100,6 +98,6 @@ export const assemble = (cls: any) => {
     inject: mapInject(cls),
     objectDef: getObjectDef(cls)
   };
-  provideGroup.set(base.id, clsMeta);
+  map.set(base.id, clsMeta);
   return clsMeta;
 };

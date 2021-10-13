@@ -33,5 +33,6 @@ export class SomeClass {
   
 }
 
-console.log(JSON.stringify(assemble(Test)));
-console.log(JSON.stringify(assemble(SomeClass)));
+const provideGroup = new Map();
+console.log(JSON.stringify(assemble(Test, provideGroup)));
+console.log(JSON.stringify(assemble(SomeClass, provideGroup)));
