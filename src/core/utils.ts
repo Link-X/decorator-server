@@ -1,6 +1,6 @@
 import "reflect-metadata";
 
-import { ROUTER_PARAMS, RESPONSE, ROUTER } from "../variable/reflect-var";
+import { ROUTER_PARAMS, RESPONSE, ROUTER, CONTROLLER, PROVIDE_TARGET, INJECT_TARGET } from "../variable/reflect-var";
 
 export const isFunction = (val: any): boolean => {
   return typeof val === "function";
@@ -34,8 +34,8 @@ export function getParamNames(func: any): string[] {
   return result;
 }
 
-export const mapRouter = (instance: Object): metaType.routerMetaList => {
-  const prototype = Object.getPrototypeOf(instance);
+export const mapRouter = (instance: any): metaType.routerMetaList => {
+  const prototype = instance.prototype;
 
   const methodsNames = Object.getOwnPropertyNames(prototype).filter((item) => !isConstructor(item) && isFunction(prototype[item]));
 
@@ -44,7 +44,6 @@ export const mapRouter = (instance: Object): metaType.routerMetaList => {
   const routerMap = Reflect.getMetadata(ROUTER, prototype.constructor);
   return methodsNames
     .map((methodName) => {
-      const fn = prototype[methodName];
       const mn = methodName.toString();
       const routerItemKey = `${ROUTER}-${mn}`;
       const paramsItemKey = `${ROUTER_PARAMS}-${mn}`;
@@ -59,8 +58,36 @@ export const mapRouter = (instance: Object): metaType.routerMetaList => {
         methodName,
         params,
         response,
-        fn,
       };
     })
     .filter((v) => v.route);
+};
+
+const mapInject = (cls: any): any => {
+  const inject = Reflect.getMetadata(INJECT_TARGET, cls);
+  const injectObj: any = {};
+  for (const key of inject.keys()) {
+    injectObj[key.split("-")[1]] = inject.get(key);
+  }
+  return injectObj;
+};
+
+const provideGroup = new Map();
+
+export const assemble = (cls: any) => {
+  const base = Reflect.getMetadata(PROVIDE_TARGET, cls);
+  if (!(base && base.id)) {
+    return;
+  }
+  const controller = Reflect.getMetadata(CONTROLLER, cls);
+
+  const router = mapRouter(cls);
+  const clsMeta = {
+    base,
+    controller: controller.get(CONTROLLER + "-CLS"),
+    router,
+    inject: mapInject(cls),
+  };
+  provideGroup.set(base.id, clsMeta);
+  return clsMeta;
 };

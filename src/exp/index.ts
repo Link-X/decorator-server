@@ -1,6 +1,5 @@
 import { Get, Query, Post, SetHeader, HttpCode, ContentType, Redirect, Controller, Provide, Inject } from "../index";
-import { CONTROLLER, PROVIDE_TARGET, INJECT_TARGET } from "../variable/reflect-var";
-import { mapRouter } from "../core/utils";
+import { assemble } from "../core/utils";
 
 @Provide()
 export class Test {
@@ -32,16 +31,4 @@ export class SomeClass {
   }
 }
 
-const assemble = (cls: any) => {
-  const pr = Reflect.getMetadata(PROVIDE_TARGET, cls);
-  const cl = Reflect.getMetadata(CONTROLLER, cls);
-  const inj = Reflect.getMetadata(INJECT_TARGET, cls);
-
-  const clsObj = new SomeClass()
-  console.log(clsObj.useTest)
-  const mthods = mapRouter(clsObj)[0];
-  console.log(pr, cl, mthods, inj);
-  return {};
-};
-
-assemble(SomeClass);
+console.log(assemble(SomeClass));
