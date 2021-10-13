@@ -1,8 +1,9 @@
-import { Get, Query, Post, SetHeader, HttpCode, ContentType, Redirect, Controller, Provide, Inject } from "../index";
+import { Get, Query, Post, SetHeader, HttpCode, ContentType, Redirect, Controller, Provide, Inject, Init } from "../index";
 import { assemble } from "../core/utils";
 
 @Provide()
 export class Test {
+  @Init()
   aaaa() {
     console.log(12344);
   }
@@ -29,6 +30,8 @@ export class SomeClass {
   somePostMethod(@Query() key: string) {
     console.log(key);
   }
+  
 }
 
+console.log(JSON.stringify(assemble(Test)));
 console.log(JSON.stringify(assemble(SomeClass)));

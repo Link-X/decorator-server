@@ -1,6 +1,6 @@
 import "reflect-metadata";
 
-import { ROUTER_PARAMS, RESPONSE, ROUTER, CONTROLLER, PROVIDE_TARGET, INJECT_TARGET } from "../variable/reflect-var";
+import { ROUTER_PARAMS, RESPONSE, ROUTER, CONTROLLER, PROVIDE_TARGET, INJECT_TARGET, OBJ_DEF_CLS } from "../variable/reflect-var";
 
 export const isFunction = (val: any): boolean => {
   return typeof val === "function";
@@ -65,6 +65,7 @@ export const mapRouter = (instance: any): metaType.routerMetaList => {
 
 const mapInject = (cls: any): any => {
   const inject = Reflect.getMetadata(INJECT_TARGET, cls);
+  if (!inject) return;
   const injectObj: any = {};
   for (const key of inject.keys()) {
     injectObj[key.split("-")[1]] = inject.get(key);
@@ -72,21 +73,32 @@ const mapInject = (cls: any): any => {
   return injectObj;
 };
 
+const getBase = (cls: any) => {
+  return Reflect.getMetadata(PROVIDE_TARGET, cls);
+};
+
+const getController = (cls: any) => {
+  const controller = Reflect.getMetadata(CONTROLLER, cls);
+  return controller && controller.get(CONTROLLER + "-CLS");
+};
+
+const getObjectDef = (cls: any) => {
+  return Reflect.getMetadata(OBJ_DEF_CLS, cls) 
+}
+
 const provideGroup = new Map();
 
 export const assemble = (cls: any) => {
-  const base = Reflect.getMetadata(PROVIDE_TARGET, cls);
+  const base = getBase(cls);
   if (!(base && base.id)) {
     return;
   }
-  const controller = Reflect.getMetadata(CONTROLLER, cls);
-
-  const router = mapRouter(cls);
   const clsMeta = {
     base,
-    controller: controller && controller.get(CONTROLLER + "-CLS"),
-    router,
+    controller: getController(cls),
+    router: mapRouter(cls),
     inject: mapInject(cls),
+    objectDef: getObjectDef(cls)
   };
   provideGroup.set(base.id, clsMeta);
   return clsMeta;

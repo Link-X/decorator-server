@@ -12,4 +12,5 @@ export declare const assemble: (cls: any) => {
     controller: any;
     router: metaType.routerMetaList;
     inject: any;
+    objectDef: any;
 } | undefined;

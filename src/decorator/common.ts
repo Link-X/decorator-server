@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { OBJ_DEF_CLS } from "../variable/reflect-var";
 
 export const saveMeta = (
   target: any,
@@ -23,3 +24,17 @@ export const saveMeta = (
   m.get(dataKey).push(data);
   Reflect.defineMetadata(metaKey, m, target);
 };
+
+export function saveObjectDefProps(target: any, props = {}) {
+   if (typeof target === "object" && target.constructor) {
+    target = target.constructor;
+  }
+  if (Reflect.hasMetadata(OBJ_DEF_CLS, target)) {
+    const originProps = Reflect.getMetadata(OBJ_DEF_CLS, target);
+
+    Reflect.defineMetadata(OBJ_DEF_CLS, Object.assign(originProps, props), target);
+  } else {
+    Reflect.defineMetadata(OBJ_DEF_CLS, props, target);
+  }
+  return target;
+}
