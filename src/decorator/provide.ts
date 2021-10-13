@@ -1,12 +1,12 @@
 import * as crypto from "crypto";
-import { INJECT_TARGET } from "../variable/reflect-var";
+import { PROVIDE_TARGET } from "../variable/reflect-var";
 
 export function generateRandomId(): string {
   return crypto.randomBytes(16).toString("hex");
 }
 
 const saveProvide = (sign: string = '', target: any, override?: boolean) => {
-  if (Reflect.hasOwnMetadata(INJECT_TARGET, target) && !override) {
+  if (Reflect.hasOwnMetadata(PROVIDE_TARGET, target) && !override) {
     throw new Error('有了,覆盖设置一下override=true');
   }
   if (!sign) {
@@ -14,7 +14,7 @@ const saveProvide = (sign: string = '', target: any, override?: boolean) => {
   }
   const uuid = generateRandomId();
   Reflect.defineMetadata(
-    INJECT_TARGET,
+    PROVIDE_TARGET,
     {
       id: sign,
       orginName: target.name,

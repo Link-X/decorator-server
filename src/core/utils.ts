@@ -37,30 +37,30 @@ export function getParamNames(func: any): string[] {
 export const mapRouter = (instance: Object): metaType.routerMetaList => {
   const prototype = Object.getPrototypeOf(instance);
 
-  const methodsNames = Object.getOwnPropertyNames(prototype).filter(
-    (item) => !isConstructor(item) && isFunction(prototype[item])
-  );
+  const methodsNames = Object.getOwnPropertyNames(prototype).filter((item) => !isConstructor(item) && isFunction(prototype[item]));
 
   const paramsMap = Reflect.getMetadata(ROUTER_PARAMS, prototype.constructor);
   const responseMap = Reflect.getMetadata(RESPONSE, prototype.constructor);
   const routerMap = Reflect.getMetadata(ROUTER, prototype.constructor);
-  return methodsNames.map((methodName) => {
-    const fn = prototype[methodName];
-    const mn = methodName.toString();
-    const routerItemKey = `${ROUTER}-${mn}`;
-    const paramsItemKey = `${ROUTER_PARAMS}-${mn}`;
-    const responseItemKey = `${RESPONSE}-${mn}`;
+  return methodsNames
+    .map((methodName) => {
+      const fn = prototype[methodName];
+      const mn = methodName.toString();
+      const routerItemKey = `${ROUTER}-${mn}`;
+      const paramsItemKey = `${ROUTER_PARAMS}-${mn}`;
+      const responseItemKey = `${RESPONSE}-${mn}`;
 
-    const route = routerMap && routerMap.get(routerItemKey);
-    const params = paramsMap && paramsMap.get(paramsItemKey);
-    const response = responseMap && responseMap.get(responseItemKey);
+      const route = routerMap && routerMap.get(routerItemKey);
+      const params = paramsMap && paramsMap.get(paramsItemKey);
+      const response = responseMap && responseMap.get(responseItemKey);
 
-    return {
-      route,
-      methodName,
-      params,
-      response,
-      fn
-    };
-  });
+      return {
+        route,
+        methodName,
+        params,
+        response,
+        fn,
+      };
+    })
+    .filter((v) => v.route);
 };

@@ -8,4 +8,5 @@ export declare const WEB_RESPONSE_REDIRECT = "responseRedirect";
 export declare const WEB_RESPONSE_HEADER = "responseHeader";
 export declare const WEB_RESPONSE_CONTENT_TYPE = "responseContentType";
 export declare const INJECT_TARGET = "injectTarget";
+export declare const PROVIDE_TARGET = "provideTarget";
 export declare const CONTROLLER = "controller";

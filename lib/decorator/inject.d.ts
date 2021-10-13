@@ -1,1 +1,2 @@
-export declare function Inject(sign?: string): (target: any, targetKey: string) => void;
+export declare function isClass(fn: any): boolean;
+export declare function Inject(): (target: any, targetKey: string, index?: number | undefined) => void;
