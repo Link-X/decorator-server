@@ -84,7 +84,7 @@ export const assemble = (cls: any) => {
   const router = mapRouter(cls);
   const clsMeta = {
     base,
-    controller: controller.get(CONTROLLER + "-CLS"),
+    controller: controller && controller.get(CONTROLLER + "-CLS"),
     router,
     inject: mapInject(cls),
   };

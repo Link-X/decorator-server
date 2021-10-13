@@ -31,4 +31,4 @@ export class SomeClass {
   }
 }
 
-console.log(assemble(SomeClass));
+console.log(JSON.stringify(assemble(SomeClass)));
