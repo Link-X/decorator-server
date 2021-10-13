@@ -83,10 +83,10 @@ const getController = (cls: any) => {
 };
 
 const getObjectDef = (cls: any) => {
-  return Reflect.getMetadata(OBJ_DEF_CLS, cls) 
-}
+  return Reflect.getMetadata(OBJ_DEF_CLS, cls);
+};
 
-export const assemble = (cls: any, map: any) => {
+export const assemble = (cls: any) => {
   const base = getBase(cls);
   if (!(base && base.id)) {
     return;
@@ -96,8 +96,7 @@ export const assemble = (cls: any, map: any) => {
     controller: getController(cls),
     router: mapRouter(cls),
     inject: mapInject(cls),
-    objectDef: getObjectDef(cls)
+    objectDef: getObjectDef(cls),
   };
-  map.set(base.id, clsMeta);
   return clsMeta;
 };

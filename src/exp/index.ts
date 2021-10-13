@@ -1,5 +1,4 @@
 import { Get, Query, Post, SetHeader, HttpCode, ContentType, Redirect, Controller, Provide, Inject, Init } from "../index";
-import { assemble } from "../core/utils";
 
 @Provide()
 export class Test {
@@ -33,6 +32,6 @@ export class SomeClass {
   
 }
 
-const provideGroup = new Map();
-console.log(JSON.stringify(assemble(Test, provideGroup)));
-console.log(JSON.stringify(assemble(SomeClass, provideGroup)));
+// const provideGroup = new Map();
+// console.log(JSON.stringify(assemble(Test, provideGroup)));
+// console.log(JSON.stringify(assemble(SomeClass, provideGroup)));

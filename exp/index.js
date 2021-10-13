@@ -1,1 +1,1 @@
-require("../lib/exp/index")
+require("../lib/starter/index.js")
