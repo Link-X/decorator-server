@@ -2,7 +2,7 @@
   "name": "root",
   "description": "a node package that can use decorator to create HTTP servers",
   "version": "0.0.3",
-  "author": "simple-decorator",
+  "author": "decorator-server",
   "private": true,
   "workspaces": [
     "packages/*"
@@ -11,7 +11,8 @@
   "license": "MIT",
   "scripts": {
     "test": "lerna run test",
-    "build": "lerna run build"
+    "build": "lerna run build",
+    "clean": "lerna clean"
   },
   "husky": {
     "hooks": {

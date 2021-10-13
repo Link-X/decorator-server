@@ -9,7 +9,7 @@ export class Container {
     console.log(this.provideGroup);
   }
 }
-
+console.log(process.cwd());
 // const containerCls = new Container();
 // Object.values(Exp).forEach((v) => {
 //   containerCls.bind(v);

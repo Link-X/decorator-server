@@ -1,1 +1,0 @@
-require("../lib/starter/index.js")

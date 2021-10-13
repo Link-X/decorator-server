@@ -1,7 +1,7 @@
 {
-  "name": "@decorator-server/starter-cli",
+  "name": "@decorator-server/starter",
   "description": "a node package that can use decorator to create HTTP servers",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "author": "simple-decorator",
   "main": "./lib",
   "license": "MIT",

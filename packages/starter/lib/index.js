@@ -15,6 +15,7 @@ class Container {
     }
 }
 exports.Container = Container;
+console.log(process.cwd());
 // const containerCls = new Container();
 // Object.values(Exp).forEach((v) => {
 //   containerCls.bind(v);
