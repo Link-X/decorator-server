@@ -1,0 +1,12 @@
+{
+  "env": {
+    "browser": true,
+    "es2020": true,
+    "node": true
+  },
+  "extends": ["plugin:@typescript-eslint/recommended"],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "rules": {}
+}

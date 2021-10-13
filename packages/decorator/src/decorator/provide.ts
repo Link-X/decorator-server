@@ -5,7 +5,7 @@ export function generateRandomId(): string {
   return crypto.randomBytes(16).toString("hex");
 }
 
-const saveProvide = (sign: string = '', target: any, override?: boolean) => {
+const saveProvide = (sign = '', target: any, override?: boolean) => {
   if (Reflect.hasOwnMetadata(PROVIDE_TARGET, target) && !override) {
     throw new Error('有了,覆盖设置一下override=true');
   }

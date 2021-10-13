@@ -1,0 +1,21 @@
+{
+  "name": "@decorator-server/starter-cli",
+  "description": "a node package that can use decorator to create HTTP servers",
+  "version": "0.0.3",
+  "author": "simple-decorator",
+  "main": "./lib",
+  "license": "MIT",
+  "bin": {
+    "starter": "bin/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --require=ts-node/register ../../node_modules/.bin/jest",
+    "ci": "npm run test",
+    "dev": "npm run build && node ./exp"
+  },
+  "dependencies": {
+    "@decorator-server/decorator": "^0.0.3"
+  },
+  "devDependencies": {}
+}

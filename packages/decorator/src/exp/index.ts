@@ -29,7 +29,6 @@ export class SomeClass {
   somePostMethod(@Query() key: string) {
     console.log(key);
   }
-  
 }
 
 // const provideGroup = new Map();

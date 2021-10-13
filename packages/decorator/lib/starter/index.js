@@ -26,4 +26,3 @@ const containerCls = new container_1.Container();
 Object.values(Exp).forEach((v) => {
     containerCls.bind(v);
 });
-//# sourceMappingURL=index.js.map

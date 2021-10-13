@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
-    "module": "CommonJS",
+    "target": "ES2018",
+    "module": "commonjs",
     "removeComments": false,
     "preserveConstEnums": true,
+    "moduleResolution": "node",
     "experimentalDecorators": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
@@ -11,18 +12,17 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "strictNullChecks": true,
-    "strict": false,
-    "sourceMap": true,
-    "moduleResolution": "node",
+    "sourceMap": false,
     "allowJs": true,
+    "resolveJsonModule": true,
     "declaration": true,
-    "emitDecoratorMetadata": true,
     "noEmitOnError": false,
     "skipLibCheck": true,
     "types": ["node"],
-    "rootDir": "./src",
-    "outDir": "./lib",
   },
-  "exclude": ["node_modules", "lib", "exp"],
-  "include": ["src/**/*"]
+  "exclude": [
+    "node_modules",
+    "lib"
+  ]
 }
+

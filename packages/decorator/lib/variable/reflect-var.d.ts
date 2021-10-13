@@ -1,0 +1,13 @@
+export declare const METHOD_METADATA = "method";
+export declare const PATH_METADATA = "path";
+export declare const ROUTER = "router";
+export declare const ROUTER_PARAMS = "routerParams";
+export declare const RESPONSE = "response";
+export declare const WEB_RESPONSE_HTTP_CODE = "responseHttpCode";
+export declare const WEB_RESPONSE_REDIRECT = "responseRedirect";
+export declare const WEB_RESPONSE_HEADER = "responseHeader";
+export declare const WEB_RESPONSE_CONTENT_TYPE = "responseContentType";
+export declare const INJECT_TARGET = "injectTarget";
+export declare const PROVIDE_TARGET = "provideTarget";
+export declare const CONTROLLER = "controller";
+export declare const OBJ_DEF_CLS = "objDef";
