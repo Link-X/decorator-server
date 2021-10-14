@@ -1,7 +1,7 @@
 {
   "name": "@decorator-server/starter",
   "description": "a node package that can use decorator to create HTTP servers",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "author": "xudaobin",
   "main": "./lib",
   "license": "MIT",
@@ -22,7 +22,7 @@
     "dev": "npm run build && node ./exp"
   },
   "dependencies": {
-    "@decorator-server/decorator": "^0.9.0"
+    "@decorator-server/decorator": "^0.10.0"
   },
   "gitHead": "4d539723d929e5753a9d678dacddc0043e8d6acb"
 }
