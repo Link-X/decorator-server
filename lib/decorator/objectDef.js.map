@@ -1,1 +1,0 @@
-{"version":3,"file":"objectDef.js","sourceRoot":"","sources":["../../src/decorator/objectDef.ts"],"names":[],"mappings":";;;AAAA,qCAA8C;AAEvC,MAAM,IAAI,GAAG,GAAG,EAAE;IACvB,OAAO,CAAC,MAAW,EAAE,WAAmB,EAAE,EAAE;QAC1C,OAAO,IAAA,2BAAkB,EAAC,MAAM,EAAE,EAAE,UAAU,EAAE,WAAW,EAAE,CAAC,CAAC;IACjE,CAAC,CAAC;AACJ,CAAC,CAAC;AAJW,QAAA,IAAI,QAIf"}

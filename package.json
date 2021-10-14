@@ -7,7 +7,6 @@
   "workspaces": [
     "packages/*"
   ],
-  "main": "./lib",
   "license": "MIT",
   "scripts": {
     "test": "lerna run test",
