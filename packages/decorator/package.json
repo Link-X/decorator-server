@@ -1,7 +1,7 @@
 {
   "name": "@decorator-server/decorator",
   "description": "a node package that can use decorator to create HTTP servers",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "author": "simple-decorator",
   "main": "./lib",
   "license": "MIT",
