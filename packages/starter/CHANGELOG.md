@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.0](https://github.com/Link-X/simple-decorator/compare/v0.8.0...v0.9.0) (2021-10-14)
+
+
+### :rocket: New Features
+
+* - ([64b92de](https://github.com/Link-X/simple-decorator/commit/64b92deee99d5a6a35f43fef3428d3c505870b7e))
+
+
+
 ## [0.8.0](https://github.com/Link-X/simple-decorator/compare/v0.7.0...v0.8.0) (2021-10-14)
 
 
