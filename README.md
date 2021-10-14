@@ -31,4 +31,6 @@ export class SomeClass {
 `yarn build`  
 
 `cd packages/exp`  
-`yarn dev`
+`yarn dev`  
+
+访问：http://localhost:9301/api
