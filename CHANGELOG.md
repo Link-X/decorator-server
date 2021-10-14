@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [0.4.2](https://github.com/Link-X/simple-decorator/compare/v0.4.1...v0.4.2) (2021-10-14)
+
+
+### :mega: Other
+
+* - ([46a72aa](https://github.com/Link-X/simple-decorator/commit/46a72aa4657893c72d54c163632b97be0449efd2))
+
+
+
 ### [0.4.1](https://github.com/Link-X/simple-decorator/compare/v0.4.0...v0.4.1) (2021-10-14)
 
 
