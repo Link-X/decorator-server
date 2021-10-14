@@ -32,8 +32,8 @@ export class SomeClass {
   @HttpCode(301)
   @ContentType('json')
   @Redirect('/ccc')
-  someGetMethod(@Query() id: string) {
-    console.log(id);
+  someGetMethod(ctx: any) {
+    console.log(ctx);
     return 'hello world';
   }
 

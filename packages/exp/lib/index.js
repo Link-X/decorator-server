@@ -30,8 +30,8 @@ Test = __decorate([
 ], Test);
 exports.Test = Test;
 let SomeClass = class SomeClass {
-    someGetMethod(id) {
-        console.log(id);
+    someGetMethod(ctx) {
+        console.log(ctx);
         return 'hello world';
     }
     somePostMethod(key) {
@@ -49,9 +49,8 @@ __decorate([
     (0, decorator_1.HttpCode)(301),
     (0, decorator_1.ContentType)('json'),
     (0, decorator_1.Redirect)('/ccc'),
-    __param(0, (0, decorator_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
 ], SomeClass.prototype, "someGetMethod", null);
 __decorate([

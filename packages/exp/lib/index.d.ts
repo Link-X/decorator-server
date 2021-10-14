@@ -3,6 +3,6 @@ export declare class Test {
 }
 export declare class SomeClass {
     useTest: Test;
-    someGetMethod(id: string): string;
+    someGetMethod(ctx: any): string;
     somePostMethod(key: string): void;
 }

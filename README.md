@@ -23,3 +23,12 @@ export class SomeClass {
   }
 }
 ```
+#### 启动示例
+`git clone https://github.com/Link-X/decorator-server.git`  
+`cd decorator-server`  
+
+`yarn install`  
+`yarn build`  
+
+`cd packages/exp`  
+`yarn dev`
