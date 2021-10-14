@@ -2,13 +2,20 @@
   "name": "@decorator-server/starter",
   "description": "a node package that can use decorator to create HTTP servers",
   "version": "0.4.1",
-  "author": "starter",
+  "author": "xudaobin",
   "main": "./lib",
   "license": "MIT",
   "private": true,
+  "keywords": [
+    "@decorator-server starter"
+  ],
   "bin": {
     "starter": "bin/index.js"
   },
+ "bugs": {
+    "url": "https://github.com/Link-X/simple-decorator/issues"
+  },
+  "homepage": "https://github.com/Link-X/simple-decorator",
   "scripts": {
     "build": "tsc",
     "test": "node --require=ts-node/register ../../node_modules/.bin/jest",

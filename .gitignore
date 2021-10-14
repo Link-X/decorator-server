@@ -15,7 +15,6 @@ run/
 package-lock.json
 .nodejs-cache
 .tmp
-packages/midway/_package.json
 midway_benchmark_app
 *.sqlite
 .env

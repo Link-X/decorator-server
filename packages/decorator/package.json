@@ -6,6 +6,17 @@
   "main": "./lib",
   "license": "MIT",
   "private": true,
+  "keywords": [
+    "decorator-server"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Link-X/simple-decorator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Link-X/simple-decorator/issues"
+  },
+  "homepage": "https://github.com/Link-X/simple-decorator",
   "scripts": {
     "build": "tsc",
     "test": "node --require=ts-node/register ../../node_modules/.bin/jest",
