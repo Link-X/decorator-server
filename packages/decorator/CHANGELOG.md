@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.0](https://github.com/Link-X/simple-decorator/compare/v0.4.2...v0.5.0) (2021-10-14)
+
+**Note:** Version bump only for package @decorator-server/decorator
+
+
+
+
+
 ### [0.4.2](https://github.com/Link-X/simple-decorator/compare/v0.4.1...v0.4.2) (2021-10-14)
 
 
