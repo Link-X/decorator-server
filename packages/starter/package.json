@@ -16,5 +16,6 @@
   },
   "dependencies": {
     "@decorator-server/decorator": "^0.1.0"
-  }
+  },
+  "gitHead": "e2281faee6c6074042fc91ed7a4c6bc05d02dfcb"
 }
