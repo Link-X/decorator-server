@@ -62,7 +62,6 @@
         "ignored-file",
         "*.md"
       ],
-      "registry": "https://registry.npm.terminus.io",
       "message": "chore: publish"
     }
   },
