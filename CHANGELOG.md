@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+### [0.4.1](https://github.com/Link-X/simple-decorator/compare/v0.4.0...v0.4.1) (2021-10-14)
+
+
+### :mega: Other
+
+* 删除无效文件 ([c384ada](https://github.com/Link-X/simple-decorator/commit/c384adaedf67bf85aaf669af4f81945d28f88f92))
+
+
+### :memo: Documentation
+
+* - ([2d2c164](https://github.com/Link-X/simple-decorator/commit/2d2c1642fe2a47b9bbd5d44a29222315b9781dcf))
+* readme.md ([cfc3092](https://github.com/Link-X/simple-decorator/commit/cfc309278b4276950c7a7a6264830281e604274f))
+
+
+
 ## [0.4.0](https://github.com/Link-X/simple-decorator/compare/v0.3.1...v0.4.0) (2021-10-14)
 
 
