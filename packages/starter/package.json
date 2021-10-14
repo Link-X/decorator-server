@@ -2,7 +2,7 @@
   "name": "@decorator-server/starter",
   "description": "a node package that can use decorator to create HTTP servers",
   "version": "0.5.0",
-  "author": "xudaobin create",
+  "author": "xudaobin",
   "main": "./lib",
   "license": "MIT",
   "private": true,
