@@ -5,6 +5,7 @@
   "author": "simple-decorator",
   "main": "./lib",
   "license": "MIT",
+  "private": true,
   "bin": {
     "starter": "bin/index.js"
   },
@@ -17,5 +18,5 @@
   "dependencies": {
     "@decorator-server/decorator": "^0.3.0"
   },
-  "gitHead": "3b634c12210f1ea1fc929d4090c698e7ed96f36c"
+  "gitHead": "ca92cef32b0c4c91ab7ad6ac9ccdaa04ed4d3e62"
 }
