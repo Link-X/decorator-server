@@ -83,13 +83,12 @@ const assemble = (cls) => {
     if (!(base && base.id)) {
         return;
     }
-    const clsMeta = {
+    return {
         base,
         controller: getController(cls),
         router: (0, exports.mapRouter)(cls),
         inject: mapInject(cls),
         objectDef: getObjectDef(cls),
     };
-    return clsMeta;
 };
 exports.assemble = assemble;
