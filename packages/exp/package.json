@@ -7,11 +7,11 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "dev": "starter ./lib"
+    "dev": "starter"
   },
   "dependencies": {
-    "@decorator-server/decorator": "^0.3.1",
-    "@decorator-server/starter": "^0.3.1"
+    "@decorator-server/decorator": "x",
+    "@decorator-server/starter": "x"
   },
   "devDependencies": {}
 }

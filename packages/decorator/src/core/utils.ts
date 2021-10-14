@@ -91,12 +91,11 @@ export const assemble = (cls: any) => {
   if (!(base && base.id)) {
     return;
   }
-  const clsMeta = {
+  return {
     base,
     controller: getController(cls),
     router: mapRouter(cls),
     inject: mapInject(cls),
     objectDef: getObjectDef(cls),
   };
-  return clsMeta;
 };
