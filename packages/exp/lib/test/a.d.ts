@@ -1,4 +1,4 @@
 export declare class first {
-    someGetMethod(id: string): string;
+    someGetMethod(): string;
     somePostMethod(params: any): void;
 }

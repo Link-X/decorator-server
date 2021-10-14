@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SomeClass = exports.Test = void 0;
 const decorator_1 = require("@decorator-server/decorator");
 let Test = class Test {
+    constructor() {
+        this.a = 3;
+    }
     aaaa() {
         console.log(12344);
     }
@@ -30,9 +33,9 @@ Test = __decorate([
 ], Test);
 exports.Test = Test;
 let SomeClass = class SomeClass {
-    someGetMethod(ctx) {
-        console.log(ctx);
-        return 'hello world';
+    someGetMethod() {
+        console.log(this.useTest.a, '----');
+        return 'hello world api/main';
     }
     somePostMethod(key) {
         console.log(key);
@@ -43,14 +46,19 @@ __decorate([
     __metadata("design:type", Test)
 ], SomeClass.prototype, "useTest", void 0);
 __decorate([
+    (0, decorator_1.Inject)(),
+    __metadata("design:type", Test)
+], SomeClass.prototype, "usetTest2", void 0);
+__decorate([
     (0, decorator_1.Get)('/'),
     (0, decorator_1.Get)('/main'),
+    (0, decorator_1.Get)('/ccc'),
     (0, decorator_1.SetHeader)({ accept: '*/*' }),
     (0, decorator_1.HttpCode)(301),
     (0, decorator_1.ContentType)('json'),
     (0, decorator_1.Redirect)('/ccc'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], SomeClass.prototype, "someGetMethod", null);
 __decorate([

@@ -18,6 +18,7 @@ export class Test {
   aaaa() {
     console.log(12344);
   }
+  a = 3
 }
 
 @Provide()
@@ -25,16 +26,19 @@ export class Test {
 export class SomeClass {
   @Inject()
   useTest: Test;
+  @Inject()
+  usetTest2: Test;
 
   @Get('/')
   @Get('/main')
+  @Get('/ccc')
   @SetHeader({ accept: '*/*' })
   @HttpCode(301)
   @ContentType('json')
   @Redirect('/ccc')
-  someGetMethod(ctx: any) {
-    console.log(ctx);
-    return 'hello world';
+  someGetMethod() {
+    console.log(this.useTest.a, '----');
+    return 'hello world api/main';
   }
 
   @Post('/b')

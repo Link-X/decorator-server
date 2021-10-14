@@ -6,44 +6,20 @@ import KoaBody from 'koa-body';
 import { assemble, isClass } from '@decorator-server/decorator';
 import { loopDir } from '../utils';
 
-interface routeType {
-  requestMethod: 'GET' | 'POST' | 'HEAD' | 'OPTIONS';
-  propertyName: string;
-  path: string;
-  middleware: any[];
-}
-
-type baseType = {
-  uuid: string;
-  orginName: string;
-  id: string;
-};
-
-type controllerType = { prefix: string; routerOptions: { middleware: any[] } };
-
-type routerType = { route: routeType[]; methodName: string; params: any };
-
-type inject = {
-  [string: string]: { value: string; key: string; injectVal: string };
-};
-
-type metaType = {
-  base: baseType;
-  controller: controllerType[];
-  router: routerType[];
-  inject: inject[];
-};
-
-type itemType = {
-  cls: any;
-  meta: metaType;
-};
-
 export class Container {
   provideGroup = new Map<string, itemType>();
   app: Koa;
-  router: any[] = [];
   rootPath = path.resolve(process.cwd(), 'lib');
+
+  expCls = (pathUrl: string, name: string, isDir: boolean) => {
+    if (isDir) return;
+    const def = Object.values(require(path.resolve(pathUrl, name)));
+    Object.values(def).forEach((v) => {
+      if (isClass(v)) {
+        this.bind(v);
+      }
+    });
+  };
 
   routerSet(meta: metaType, clsObj: any) {
     const { controller = [], router = [] } = meta;
@@ -60,50 +36,58 @@ export class Container {
         }
         next();
       };
-      route.forEach((j) => {
-        const { requestMethod } = j;
+      const pathArr = route.map((v) => v.path);
+      const { requestMethod, propertyName } = route[0];
+      if (requestMethod === 'GET') {
+        routerCls.get(pathArr, (ctx, next) =>
+          routerFunc(ctx, next, propertyName),
+        );
+      }
 
-        if (requestMethod === 'GET') {
-          routerCls.get(j.path, (ctx, next) =>
-            routerFunc(ctx, next, j.propertyName),
-          );
-        }
-        if (requestMethod === 'POST') {
-          routerCls.post(j.path, (ctx, next) =>
-            routerFunc(ctx, next, j.propertyName),
-          );
-        }
-      });
+      if (requestMethod === 'POST') {
+        routerCls.post(pathArr, (ctx, next) =>
+          routerFunc(ctx, next, propertyName),
+        );
+      }
+
+      if (requestMethod === 'ALL') {
+        routerCls.all(pathArr, (ctx, next) =>
+          routerFunc(ctx, next, propertyName),
+        );
+      }
     });
-    this.router.push(routerCls.routes());
+    this.app.use(routerCls.routes());
+  }
+
+  injectSet(inject: injectType, clsObj: any) {
+    if (!inject) return;
+    Object.keys(inject).forEach((v) => {
+      const item = inject[v][0];
+      const providMeta = this.provideGroup.get(item.injectVal) as itemType;
+      clsObj[v] = providMeta.cls;
+    });
   }
 
   bind(cls: any) {
     const meta = assemble(cls);
     if (!meta) return;
-    const clsObj = new cls();
-    this.routerSet(meta, clsObj);
-    this.provideGroup.set(meta.base.id, { cls: clsObj, meta });
+    this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
   }
 
-  expCls = (pathUrl: string, name: string, isDir: boolean) => {
-    if (isDir) return;
-    const def = Object.values(require(path.resolve(pathUrl, name)));
-    Object.values(def).forEach((v) => {
-      if (isClass(v)) {
-        this.bind(v);
-      }
-    });
-  };
-
-  async init() {
+  install() {
     this.app = new Koa();
     this.app.use(KoaBody());
-    await loopDir(this.rootPath, this.expCls);
-    this.router.forEach((item) => {
-      this.app.use(item);
-    });
+    for (const provideItem of this.provideGroup.values()) {
+      this.injectSet(provideItem.meta.inject, provideItem.cls);
+      this.routerSet(provideItem.meta, provideItem.cls);
+    }
     this.app.listen(9301);
+  }
+
+  async init() {
+    await loopDir(this.rootPath, this.expCls);
+    this.install();
+    console.log(JSON.stringify(this.provideGroup.get('SomeClass')));
     console.log('http://localhost:9301/');
   }
 }

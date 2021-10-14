@@ -15,22 +15,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.first = void 0;
 const decorator_1 = require("@decorator-server/decorator");
 let first = class first {
-    someGetMethod(id) {
-        return `hello world${id}`;
+    someGetMethod() {
+        return `hello world /`;
     }
     somePostMethod(params) {
         console.log(params);
     }
 };
 __decorate([
-    (0, decorator_1.Get)('/page'),
-    __param(0, (0, decorator_1.Query)()),
+    (0, decorator_1.Get)('/'),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], first.prototype, "someGetMethod", null);
 __decorate([
-    (0, decorator_1.Post)('/api'),
+    (0, decorator_1.Post)('/postUrl'),
     __param(0, (0, decorator_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),

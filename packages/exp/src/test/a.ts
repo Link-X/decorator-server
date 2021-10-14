@@ -9,12 +9,12 @@ import {
 @Provide()
 @Controller('/')
 export class first {
-  @Get('/page')
-  someGetMethod(@Query() id: string) {
-    return `hello world${id}`;
+  @Get('/')
+  someGetMethod() {
+    return `hello world /`;
   }
 
-  @Post('/api')
+  @Post('/postUrl')
   somePostMethod(@Query() params: any) {
     console.log(params)
   }
