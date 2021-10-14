@@ -46,29 +46,32 @@ export class Container {
   rootPath = path.resolve(process.cwd(), 'lib');
 
   routerSet(meta: metaType, clsObj: any) {
-    const { controller, router = [] } = meta;
-    if (!(controller && controller.length) || !(router && router.length)) {
-      return;
-    }
+    const { controller = [], router = [] } = meta;
+    if (!(controller && controller.length)) return;
     const routerCls = new Router({
       prefix: controller[0].prefix || undefined,
     });
     router.forEach((v) => {
       const route = v.route || [];
+      const routerFunc = (ctx: any, next: any, propertyName: string) => {
+        const rv = clsObj[propertyName](ctx);
+        if (rv) {
+          ctx.body = rv;
+        }
+        next();
+      };
       route.forEach((j) => {
         const { requestMethod } = j;
-        const routerFunc = (ctx: any, next: any) => {
-          const rv = clsObj[j.propertyName](ctx);
-          if (rv) {
-            ctx.body = rv;
-          }
-          next();
-        };
+
         if (requestMethod === 'GET') {
-          routerCls.get(j.path, routerFunc);
+          routerCls.get(j.path, (ctx, next) =>
+            routerFunc(ctx, next, j.propertyName),
+          );
         }
         if (requestMethod === 'POST') {
-          routerCls.post(j.path, routerFunc);
+          routerCls.post(j.path, (ctx, next) =>
+            routerFunc(ctx, next, j.propertyName),
+          );
         }
       });
     });
@@ -95,8 +98,8 @@ export class Container {
 
   async init() {
     this.app = new Koa();
-    await loopDir(this.rootPath, this.expCls);
     this.app.use(KoaBody());
+    await loopDir(this.rootPath, this.expCls);
     this.router.forEach((item) => {
       this.app.use(item);
     });
