@@ -21,7 +21,13 @@ export class Container {
     });
   };
 
-  routerSet(meta: metaType, clsObj: any) {
+  bind(cls: any) {
+    const meta = assemble(cls);
+    if (!meta) return;
+    this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
+  }
+
+  koaRouterInit(meta: metaType, clsObj: any) {
     const { controller = [], router = [] } = meta;
     if (!(controller && controller.length)) return;
     const routerCls = new Router({
@@ -59,7 +65,7 @@ export class Container {
     this.app.use(routerCls.routes());
   }
 
-  injectSet(inject: injectType, clsObj: any) {
+  injectInit(inject: injectType, clsObj: any) {
     if (!inject) return;
     Object.keys(inject).forEach((v) => {
       const item = inject[v][0];
@@ -68,25 +74,19 @@ export class Container {
     });
   }
 
-  bind(cls: any) {
-    const meta = assemble(cls);
-    if (!meta) return;
-    this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
-  }
-
-  install() {
+  installKoa() {
     this.app = new Koa();
     this.app.use(KoaBody());
     for (const provideItem of this.provideGroup.values()) {
-      this.injectSet(provideItem.meta.inject, provideItem.cls);
-      this.routerSet(provideItem.meta, provideItem.cls);
+      this.injectInit(provideItem.meta.inject, provideItem.cls);
+      this.koaRouterInit(provideItem.meta, provideItem.cls);
     }
     this.app.listen(9301);
   }
 
   async init() {
     await loopDir(this.rootPath, this.expCls);
-    this.install();
+    this.installKoa();
     console.log(JSON.stringify(this.provideGroup.get('SomeClass')));
     console.log('http://localhost:9301/');
   }
