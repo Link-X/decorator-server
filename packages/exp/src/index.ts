@@ -33,30 +33,29 @@ export class SomeClass {
 
   @Get('/')
   @Get('/ccc/:id')
-  @SetHeader({ accept: '*/*',test: 'cecece' })
+  @SetHeader({ accept: '*/*', test: 'cecece' })
   @ContentType('text')
-  @Redirect('/api/abcccd')
+  @Redirect('/api/abc')
   someGetMethod() {
-    console.log(this.useTest.a, '----');
-    console.log(this.first.kff, '-----');
     return 'hello world api/ccc`';
   }
 
-  @HttpCode(301)
-  @Get('/abcccd')
-  redirectPath(){
-    return new Promise(res =>{
-      setTimeout(() =>{
-        res('3s --- redirect')
-      }, 3000)
-    })
+  @HttpCode(200)
+  @Get('/abc')
+  async redirectPath() {
+    const awaitFunc = () => {
+      return new Promise((res) => {
+        setTimeout(() => res('3s -- redirect'), 3000);
+      });
+    };
+    return await awaitFunc();
   }
 
   @Post('/b')
   @ContentType('json')
   somePostMethod(@Query() key: string) {
     console.log(key);
-    return {a:1,b:3}
+    return { a: 1, b: 3 };
   }
 }
 

@@ -64,15 +64,18 @@ export class Container {
 
   async routerCallback(ctx: ctxType, obj: any, v: routerType) {
     const { methodName, response = [] } = v;
-    let rv;
+    let result;
     if (isPromise(obj[methodName])) {
-      rv = await obj[methodName](ctx);
+      result = await obj[methodName](ctx);
     } else {
-      rv = obj[methodName](ctx);
+      result = obj[methodName](ctx);
+    }
+    if (isPromise(result)) {
+      await result
     }
     response.forEach((v) => this.resCls[v.type](ctx, v));
-    if (rv) {
-      ctx.body = rv;
+    if (result) {
+      ctx.body = result;
     }
   }
 

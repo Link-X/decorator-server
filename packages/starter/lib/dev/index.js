@@ -58,17 +58,19 @@ class Container {
     }
     async routerCallback(ctx, obj, v) {
         const { methodName, response = [] } = v;
-        let rv;
+        let result;
         if ((0, decorator_1.isPromise)(obj[methodName])) {
-            rv = await obj[methodName](ctx);
+            result = await obj[methodName](ctx);
         }
         else {
-            rv = obj[methodName](ctx);
+            result = obj[methodName](ctx);
         }
-        console.log(rv, 'rvrv');
+        if ((0, decorator_1.isPromise)(result)) {
+            await result;
+        }
         response.forEach((v) => this.resCls[v.type](ctx, v));
-        if (rv) {
-            ctx.body = rv;
+        if (result) {
+            ctx.body = result;
         }
     }
     koaRouterInit(meta, clsObj) {

@@ -35,16 +35,15 @@ Test = __decorate([
 exports.Test = Test;
 let SomeClass = class SomeClass {
     someGetMethod() {
-        console.log(this.useTest.a, '----');
-        console.log(this.first.kff, '-----');
         return 'hello world api/ccc`';
     }
-    redirectPath() {
-        return new Promise(res => {
-            setTimeout(() => {
-                res('3s --- redirect');
-            }, 3000);
-        });
+    async redirectPath() {
+        const awaitFunc = () => {
+            return new Promise((res) => {
+                setTimeout(() => res('3s -- redirect'), 3000);
+            });
+        };
+        return await awaitFunc();
     }
     somePostMethod(key) {
         console.log(key);
@@ -64,17 +63,17 @@ __decorate([
     (0, decorator_1.Get)('/ccc/:id'),
     (0, decorator_1.SetHeader)({ accept: '*/*', test: 'cecece' }),
     (0, decorator_1.ContentType)('text'),
-    (0, decorator_1.Redirect)('/api/abcccd'),
+    (0, decorator_1.Redirect)('/api/abc'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], SomeClass.prototype, "someGetMethod", null);
 __decorate([
-    (0, decorator_1.HttpCode)(301),
-    (0, decorator_1.Get)('/abcccd'),
+    (0, decorator_1.HttpCode)(200),
+    (0, decorator_1.Get)('/abc'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SomeClass.prototype, "redirectPath", null);
 __decorate([
     (0, decorator_1.Post)('/b'),

@@ -116,6 +116,11 @@ const isObject = (val) => {
 };
 exports.isObject = isObject;
 const isPromise = (val) => {
-    return (0, exports.isObject)(val) && (0, exports.isFunction)(val.then) && (0, exports.isFunction)(val.catch);
+    if (!val)
+        return false;
+    const name = val.constructor.name;
+    if (name === 'AsyncFunction' || name === 'Promise')
+        return true;
+    console.log(name, val);
 };
 exports.isPromise = isPromise;

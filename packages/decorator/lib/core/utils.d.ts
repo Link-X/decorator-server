@@ -16,4 +16,4 @@ export declare const assemble: (cls: any) => {
 } | undefined;
 export declare function isClass(fn: any): boolean;
 export declare const isObject: (val: any) => boolean;
-export declare const isPromise: (val: any) => boolean;
+export declare const isPromise: (val: any) => boolean | undefined;
