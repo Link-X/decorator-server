@@ -7,7 +7,7 @@ export declare class SomeClass {
     useTest: Test;
     first: first;
     someGetMethod(): string;
-    redirectPath(): string;
+    redirectPath(): Promise<unknown>;
     somePostMethod(key: string): {
         a: number;
         b: number;

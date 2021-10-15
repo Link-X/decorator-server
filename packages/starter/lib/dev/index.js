@@ -56,6 +56,21 @@ class Container {
             return;
         this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
     }
+    async routerCallback(ctx, obj, v) {
+        const { methodName, response = [] } = v;
+        let rv;
+        if ((0, decorator_1.isPromise)(obj[methodName])) {
+            rv = await obj[methodName](ctx);
+        }
+        else {
+            rv = obj[methodName](ctx);
+        }
+        console.log(rv, 'rvrv');
+        response.forEach((v) => this.resCls[v.type](ctx, v));
+        if (rv) {
+            ctx.body = rv;
+        }
+    }
     koaRouterInit(meta, clsObj) {
         const { controller = [], router = [] } = meta;
         if (!(controller && controller.length))
@@ -64,14 +79,10 @@ class Container {
             prefix: controller[0].prefix || undefined,
         });
         router.forEach((v) => {
-            const { route = [], methodName, response = [] } = v;
+            const { route = [] } = v;
             const pathArr = (route || []).map((v) => v.path);
-            const routerFunc = (ctx, next) => {
-                const rv = clsObj[methodName](ctx);
-                response.forEach((v) => this.resCls[v.type](ctx, v));
-                if (rv) {
-                    ctx.body = rv;
-                }
+            const routerFunc = async (ctx, next) => {
+                await this.routerCallback(ctx, clsObj, v);
                 next();
             };
             const { requestMethod } = route[0];

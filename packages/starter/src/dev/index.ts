@@ -3,7 +3,7 @@ import Koa from 'koa';
 import Router from '@koa/router';
 import KoaBody from 'koa-body';
 
-import { assemble, isClass } from '@decorator-server/decorator';
+import { assemble, isClass, isPromise } from '@decorator-server/decorator';
 import { loopDir } from '../utils';
 
 const contentTypes: any = {
@@ -23,7 +23,7 @@ export class setResponse {
   }
 
   responseHttpCode(ctx: ctxType, item: responseType) {
-    ctx.response.status = item.code
+    ctx.response.status = item.code;
   }
 
   responseHeader(ctx: ctxType, item: responseType) {
@@ -43,7 +43,7 @@ export class Container {
   resCls: setResponse;
   constructor(res: setResponse) {
     this.resCls = res;
-    this.init()
+    this.init();
   }
 
   expCls = (pathUrl: string, name: string, isDir: boolean) => {
@@ -62,6 +62,20 @@ export class Container {
     this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
   }
 
+  async routerCallback(ctx: ctxType, obj: any, v: routerType) {
+    const { methodName, response = [] } = v;
+    let rv;
+    if (isPromise(obj[methodName])) {
+      rv = await obj[methodName](ctx);
+    } else {
+      rv = obj[methodName](ctx);
+    }
+    response.forEach((v) => this.resCls[v.type](ctx, v));
+    if (rv) {
+      ctx.body = rv;
+    }
+  }
+
   koaRouterInit(meta: metaType, clsObj: any) {
     const { controller = [], router = [] } = meta;
     if (!(controller && controller.length)) return;
@@ -69,15 +83,11 @@ export class Container {
       prefix: controller[0].prefix || undefined,
     });
     router.forEach((v) => {
-      const { route = [], methodName, response = [] } = v;
+      const { route = [] } = v;
       const pathArr = (route || []).map((v) => v.path);
 
-      const routerFunc = (ctx: ctxType, next: any) => {
-        const rv = clsObj[methodName](ctx);
-        response.forEach((v) => this.resCls[v.type](ctx, v));
-        if (rv) {
-          ctx.body = rv;
-        }
+      const routerFunc = async (ctx: ctxType, next: any) => {
+        await this.routerCallback(ctx, clsObj, v);
         next();
       };
 

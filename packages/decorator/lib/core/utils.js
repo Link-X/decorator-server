@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.assemble = exports.mapRouter = exports.getParamNames = exports.isConstructor = exports.isFunction = void 0;
+exports.isPromise = exports.isObject = exports.isClass = exports.assemble = exports.mapRouter = exports.getParamNames = exports.isConstructor = exports.isFunction = void 0;
 require("reflect-metadata");
 const reflect_var_1 = require("../variable/reflect-var");
 const isFunction = (val) => {
-    return typeof val === "function";
+    return typeof val === 'function';
 };
 exports.isFunction = isFunction;
 const isConstructor = (val) => {
-    if (val === "constructor") {
+    if (val === 'constructor') {
         return true;
     }
     return false;
@@ -20,14 +20,14 @@ const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
  * @param func
  */
 function getParamNames(func) {
-    const fnStr = func.toString().replace(STRIP_COMMENTS, "");
+    const fnStr = func.toString().replace(STRIP_COMMENTS, '');
     let result = fnStr
-        .slice(fnStr.indexOf("(") + 1, fnStr.indexOf(")"))
-        .split(",")
+        .slice(fnStr.indexOf('(') + 1, fnStr.indexOf(')'))
+        .split(',')
         .map((content) => {
-        return content.trim().replace(/\s?=.*$/, "");
+        return content.trim().replace(/\s?=.*$/, '');
     });
-    if (result.length === 1 && result[0] === "") {
+    if (result.length === 1 && result[0] === '') {
         result = [];
     }
     return result;
@@ -64,7 +64,7 @@ const mapInject = (cls) => {
         return;
     const injectObj = {};
     for (const key of inject.keys()) {
-        injectObj[key.split("-")[1]] = inject.get(key);
+        injectObj[key.split('-')[1]] = inject.get(key);
     }
     return injectObj;
 };
@@ -73,7 +73,7 @@ const getBase = (cls) => {
 };
 const getController = (cls) => {
     const controller = Reflect.getMetadata(reflect_var_1.CONTROLLER, cls);
-    return controller && controller.get(reflect_var_1.CONTROLLER + "-CLS");
+    return controller && controller.get(reflect_var_1.CONTROLLER + '-CLS');
 };
 const getObjectDef = (cls) => {
     return Reflect.getMetadata(reflect_var_1.OBJ_DEF_CLS, cls);
@@ -92,3 +92,30 @@ const assemble = (cls) => {
     };
 };
 exports.assemble = assemble;
+const ToString = Function.prototype.toString;
+function fnBody(fn) {
+    return ToString.call(fn)
+        .replace(/^[^{]*{\s*/, '')
+        .replace(/\s*}[^}]*$/, '');
+}
+function isClass(fn) {
+    if (typeof fn !== 'function') {
+        return false;
+    }
+    if (/^class[\s{]/.test(ToString.call(fn))) {
+        return true;
+    }
+    // babel.js classCallCheck() & inlined
+    const body = fnBody(fn);
+    return (/classCallCheck\(/.test(body) ||
+        /TypeError\("Cannot call a class as a function"\)/.test(body));
+}
+exports.isClass = isClass;
+const isObject = (val) => {
+    return val != null && typeof val === 'object' && Array.isArray(val) === false;
+};
+exports.isObject = isObject;
+const isPromise = (val) => {
+    return (0, exports.isObject)(val) && (0, exports.isFunction)(val.then) && (0, exports.isFunction)(val.catch);
+};
+exports.isPromise = isPromise;

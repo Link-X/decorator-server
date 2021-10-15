@@ -45,7 +45,11 @@ export class SomeClass {
   @HttpCode(301)
   @Get('/abcccd')
   redirectPath(){
-    return 'redirectPath'
+    return new Promise(res =>{
+      setTimeout(() =>{
+        res('3s --- redirect')
+      }, 3000)
+    })
   }
 
   @Post('/b')

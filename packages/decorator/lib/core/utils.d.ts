@@ -1,4 +1,4 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 export declare const isFunction: (val: any) => boolean;
 export declare const isConstructor: (val: string) => boolean;
 /**
@@ -14,3 +14,6 @@ export declare const assemble: (cls: any) => {
     inject: any;
     objectDef: any;
 } | undefined;
+export declare function isClass(fn: any): boolean;
+export declare const isObject: (val: any) => boolean;
+export declare const isPromise: (val: any) => boolean;

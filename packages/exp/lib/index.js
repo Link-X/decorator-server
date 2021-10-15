@@ -40,7 +40,11 @@ let SomeClass = class SomeClass {
         return 'hello world api/ccc`';
     }
     redirectPath() {
-        return 'redirectPath';
+        return new Promise(res => {
+            setTimeout(() => {
+                res('3s --- redirect');
+            }, 3000);
+        });
     }
     somePostMethod(key) {
         console.log(key);

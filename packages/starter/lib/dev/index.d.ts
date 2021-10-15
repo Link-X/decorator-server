@@ -14,6 +14,7 @@ export declare class Container {
     constructor(res: setResponse);
     expCls: (pathUrl: string, name: string, isDir: boolean) => void;
     bind(cls: any): void;
+    routerCallback(ctx: ctxType, obj: any, v: routerType): Promise<void>;
     koaRouterInit(meta: metaType, clsObj: any): void;
     injectInit(inject: injectType, clsObj: any): void;
     installKoa(): void;
