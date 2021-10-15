@@ -1,9 +1,7 @@
 import {
   Get,
-  Query,
-  Post,
-  Controller,
   Provide,
+  Controller
 } from '@decorator-server/decorator';
 
 @Provide()
@@ -14,8 +12,10 @@ export class first {
     return `hello world /`;
   }
 
-  @Post('/postUrl')
-  somePostMethod(@Query() params: any) {
+  somePostMethod(params: any) {
     console.log(params)
   }
+
+  kff = 321
+
 }

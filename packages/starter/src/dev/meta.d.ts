@@ -13,7 +13,20 @@ type baseType = {
 
 type controllerType = { prefix: string; routerOptions: { middleware: any[] } };
 
-type routerType = { route: routeType[]; methodName: string; params: any };
+type responseType = {
+  type: string;
+  url?: string;
+  code?: number;
+  setHeaders?: any
+  [string: string]: string;
+};
+
+type routerType = {
+  route: routeType[];
+  methodName: string;
+  params?: any;
+  response?: responseType[];
+};
 
 type injectType = {
   [string: string]: { value: string; key: string; injectVal: string }[];
@@ -30,3 +43,11 @@ type itemType = {
   cls: any;
   meta: metaType;
 };
+
+
+type ctxType = Koa.ParameterizedContext<
+  Koa.DefaultState,
+  Koa.DefaultContext &
+    Router.RouterParamContext<Koa.DefaultState, Koa.DefaultContext>,
+  any
+>;

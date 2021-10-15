@@ -1,10 +1,15 @@
+import { first } from './test/a';
 export declare class Test {
     aaaa(): void;
     a: number;
 }
 export declare class SomeClass {
     useTest: Test;
-    usetTest2: Test;
+    first: first;
     someGetMethod(): string;
-    somePostMethod(key: string): void;
+    redirectPath(): string;
+    somePostMethod(key: string): {
+        a: number;
+        b: number;
+    };
 }

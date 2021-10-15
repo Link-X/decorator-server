@@ -6,10 +6,44 @@ import KoaBody from 'koa-body';
 import { assemble, isClass } from '@decorator-server/decorator';
 import { loopDir } from '../utils';
 
+const contentTypes: any = {
+  html: 'text/html',
+  json: 'application/json',
+  text: 'text/plain',
+  form: 'multipart/form-data',
+};
+
+export class setResponse {
+  [string: string]: (ctx: ctxType, item: responseType) => void;
+
+  responseContentType(ctx: ctxType, item: responseType) {
+    const type =
+      contentTypes[item.contentType] || contentTypes[item.contentType];
+    ctx.set('content-type', type);
+  }
+
+  responseHttpCode(ctx: ctxType, item: responseType) {
+    ctx.response.status = item.code
+  }
+
+  responseHeader(ctx: ctxType, item: responseType) {
+    ctx.set(item.setHeaders);
+  }
+
+  responseRedirect(ctx: ctxType, item: responseType) {
+    ctx.response.redirect(item.url);
+    this.responseHttpCode(ctx, item);
+  }
+}
+
 export class Container {
   provideGroup = new Map<string, itemType>();
   app: Koa;
   rootPath = path.resolve(process.cwd(), 'lib');
+  resCls: setResponse;
+  constructor(res: setResponse) {
+    this.resCls = res;
+  }
 
   expCls = (pathUrl: string, name: string, isDir: boolean) => {
     if (isDir) return;
@@ -34,32 +68,29 @@ export class Container {
       prefix: controller[0].prefix || undefined,
     });
     router.forEach((v) => {
-      const route = v.route || [];
-      const routerFunc = (ctx: any, next: any, propertyName: string) => {
-        const rv = clsObj[propertyName](ctx);
+      const { route = [], methodName, response = [] } = v;
+      const pathArr = (route || []).map((v) => v.path);
+
+      const routerFunc = (ctx: ctxType, next: any) => {
+        const rv = clsObj[methodName](ctx);
+        response.forEach((v) => this.resCls[v.type](ctx, v));
         if (rv) {
           ctx.body = rv;
         }
         next();
       };
-      const pathArr = route.map((v) => v.path);
-      const { requestMethod, propertyName } = route[0];
+
+      const { requestMethod } = route[0];
       if (requestMethod === 'GET') {
-        routerCls.get(pathArr, (ctx, next) =>
-          routerFunc(ctx, next, propertyName),
-        );
+        routerCls.get(pathArr, (ctx, next) => routerFunc(ctx, next));
       }
 
       if (requestMethod === 'POST') {
-        routerCls.post(pathArr, (ctx, next) =>
-          routerFunc(ctx, next, propertyName),
-        );
+        routerCls.post(pathArr, (ctx, next) => routerFunc(ctx, next));
       }
 
       if (requestMethod === 'ALL') {
-        routerCls.all(pathArr, (ctx, next) =>
-          routerFunc(ctx, next, propertyName),
-        );
+        routerCls.all(pathArr, (ctx, next) => routerFunc(ctx, next));
       }
     });
     this.app.use(routerCls.routes());
@@ -92,5 +123,5 @@ export class Container {
   }
 }
 
-const containerCls = new Container();
+const containerCls = new Container(new setResponse());
 containerCls.init();

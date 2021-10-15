@@ -3,15 +3,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Container = void 0;
+exports.Container = exports.setResponse = void 0;
 const path_1 = __importDefault(require("path"));
 const koa_1 = __importDefault(require("koa"));
 const router_1 = __importDefault(require("@koa/router"));
 const koa_body_1 = __importDefault(require("koa-body"));
 const decorator_1 = require("@decorator-server/decorator");
 const utils_1 = require("../utils");
+const contentTypes = {
+    html: 'text/html',
+    json: 'application/json',
+    text: 'text/plain',
+    form: 'multipart/form-data',
+};
+class setResponse {
+    responseContentType(ctx, item) {
+        const type = contentTypes[item.contentType] || contentTypes[item.contentType];
+        ctx.set('content-type', type);
+    }
+    responseHttpCode(ctx, item) {
+        ctx.response.status = item.code;
+    }
+    responseHeader(ctx, item) {
+        ctx.set(item.setHeaders);
+    }
+    responseRedirect(ctx, item) {
+        ctx.response.redirect(item.url);
+        this.responseHttpCode(ctx, item);
+    }
+}
+exports.setResponse = setResponse;
 class Container {
-    constructor() {
+    constructor(res) {
         this.provideGroup = new Map();
         this.rootPath = path_1.default.resolve(process.cwd(), 'lib');
         this.expCls = (pathUrl, name, isDir) => {
@@ -24,8 +47,15 @@ class Container {
                 }
             });
         };
+        this.resCls = res;
     }
-    routerSet(meta, clsObj) {
+    bind(cls) {
+        const meta = (0, decorator_1.assemble)(cls);
+        if (!meta)
+            return;
+        this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
+    }
+    koaRouterInit(meta, clsObj) {
         const { controller = [], router = [] } = meta;
         if (!(controller && controller.length))
             return;
@@ -33,29 +63,30 @@ class Container {
             prefix: controller[0].prefix || undefined,
         });
         router.forEach((v) => {
-            const route = v.route || [];
-            const routerFunc = (ctx, next, propertyName) => {
-                const rv = clsObj[propertyName](ctx);
+            const { route = [], methodName, response = [] } = v;
+            const pathArr = (route || []).map((v) => v.path);
+            const routerFunc = (ctx, next) => {
+                const rv = clsObj[methodName](ctx);
+                response.forEach((v) => this.resCls[v.type](ctx, v));
                 if (rv) {
                     ctx.body = rv;
                 }
                 next();
             };
-            const pathArr = route.map((v) => v.path);
-            const { requestMethod, propertyName } = route[0];
+            const { requestMethod } = route[0];
             if (requestMethod === 'GET') {
-                routerCls.get(pathArr, (ctx, next) => routerFunc(ctx, next, propertyName));
+                routerCls.get(pathArr, (ctx, next) => routerFunc(ctx, next));
             }
             if (requestMethod === 'POST') {
-                routerCls.post(pathArr, (ctx, next) => routerFunc(ctx, next, propertyName));
+                routerCls.post(pathArr, (ctx, next) => routerFunc(ctx, next));
             }
             if (requestMethod === 'ALL') {
-                routerCls.all(pathArr, (ctx, next) => routerFunc(ctx, next, propertyName));
+                routerCls.all(pathArr, (ctx, next) => routerFunc(ctx, next));
             }
         });
         this.app.use(routerCls.routes());
     }
-    injectSet(inject, clsObj) {
+    injectInit(inject, clsObj) {
         if (!inject)
             return;
         Object.keys(inject).forEach((v) => {
@@ -64,28 +95,22 @@ class Container {
             clsObj[v] = providMeta.cls;
         });
     }
-    bind(cls) {
-        const meta = (0, decorator_1.assemble)(cls);
-        if (!meta)
-            return;
-        this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
-    }
-    install() {
+    installKoa() {
         this.app = new koa_1.default();
         this.app.use((0, koa_body_1.default)());
         for (const provideItem of this.provideGroup.values()) {
-            this.injectSet(provideItem.meta.inject, provideItem.cls);
-            this.routerSet(provideItem.meta, provideItem.cls);
+            this.injectInit(provideItem.meta.inject, provideItem.cls);
+            this.koaRouterInit(provideItem.meta, provideItem.cls);
         }
         this.app.listen(9301);
     }
     async init() {
         await (0, utils_1.loopDir)(this.rootPath, this.expCls);
-        this.install();
+        this.installKoa();
         console.log(JSON.stringify(this.provideGroup.get('SomeClass')));
         console.log('http://localhost:9301/');
     }
 }
 exports.Container = Container;
-const containerCls = new Container();
+const containerCls = new Container(new setResponse());
 containerCls.init();

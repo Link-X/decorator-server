@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SomeClass = exports.Test = void 0;
 const decorator_1 = require("@decorator-server/decorator");
+const a_1 = require("./test/a");
 let Test = class Test {
     constructor() {
         this.a = 3;
@@ -35,10 +36,15 @@ exports.Test = Test;
 let SomeClass = class SomeClass {
     someGetMethod() {
         console.log(this.useTest.a, '----');
-        return 'hello world api/main';
+        console.log(this.first.kff, '-----');
+        return 'hello world api/ccc`';
+    }
+    redirectPath() {
+        return 'redirectPath';
     }
     somePostMethod(key) {
         console.log(key);
+        return { a: 1, b: 3 };
     }
 };
 __decorate([
@@ -47,22 +53,28 @@ __decorate([
 ], SomeClass.prototype, "useTest", void 0);
 __decorate([
     (0, decorator_1.Inject)(),
-    __metadata("design:type", Test)
-], SomeClass.prototype, "usetTest2", void 0);
+    __metadata("design:type", a_1.first)
+], SomeClass.prototype, "first", void 0);
 __decorate([
     (0, decorator_1.Get)('/'),
-    (0, decorator_1.Get)('/main'),
-    (0, decorator_1.Get)('/ccc'),
-    (0, decorator_1.SetHeader)({ accept: '*/*' }),
-    (0, decorator_1.HttpCode)(301),
-    (0, decorator_1.ContentType)('json'),
-    (0, decorator_1.Redirect)('/ccc'),
+    (0, decorator_1.Get)('/ccc/:id'),
+    (0, decorator_1.SetHeader)({ accept: '*/*', test: 'cecece' }),
+    (0, decorator_1.ContentType)('text'),
+    (0, decorator_1.Redirect)('/api/abcccd'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], SomeClass.prototype, "someGetMethod", null);
 __decorate([
+    (0, decorator_1.HttpCode)(301),
+    (0, decorator_1.Get)('/abcccd'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], SomeClass.prototype, "redirectPath", null);
+__decorate([
     (0, decorator_1.Post)('/b'),
+    (0, decorator_1.ContentType)('json'),
     __param(0, (0, decorator_1.Query)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

@@ -12,13 +12,15 @@ import {
   Init,
 } from '@decorator-server/decorator';
 
+import { first } from './test/a';
+
 @Provide()
 export class Test {
   @Init()
   aaaa() {
     console.log(12344);
   }
-  a = 3
+  a = 3;
 }
 
 @Provide()
@@ -27,23 +29,30 @@ export class SomeClass {
   @Inject()
   useTest: Test;
   @Inject()
-  usetTest2: Test;
+  first: first;
 
   @Get('/')
-  @Get('/main')
-  @Get('/ccc')
-  @SetHeader({ accept: '*/*' })
-  @HttpCode(301)
-  @ContentType('json')
-  @Redirect('/ccc')
+  @Get('/ccc/:id')
+  @SetHeader({ accept: '*/*',test: 'cecece' })
+  @ContentType('text')
+  @Redirect('/api/abcccd')
   someGetMethod() {
     console.log(this.useTest.a, '----');
-    return 'hello world api/main';
+    console.log(this.first.kff, '-----');
+    return 'hello world api/ccc`';
+  }
+
+  @HttpCode(301)
+  @Get('/abcccd')
+  redirectPath(){
+    return 'redirectPath'
   }
 
   @Post('/b')
+  @ContentType('json')
   somePostMethod(@Query() key: string) {
     console.log(key);
+    return {a:1,b:3}
   }
 }
 
