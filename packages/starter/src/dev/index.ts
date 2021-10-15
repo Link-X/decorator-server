@@ -43,6 +43,7 @@ export class Container {
   resCls: setResponse;
   constructor(res: setResponse) {
     this.resCls = res;
+    this.init()
   }
 
   expCls = (pathUrl: string, name: string, isDir: boolean) => {
@@ -118,10 +119,8 @@ export class Container {
   async init() {
     await loopDir(this.rootPath, this.expCls);
     this.installKoa();
-    console.log(JSON.stringify(this.provideGroup.get('SomeClass')));
     console.log('http://localhost:9301/');
   }
 }
 
-const containerCls = new Container(new setResponse());
-containerCls.init();
+new Container(new setResponse());

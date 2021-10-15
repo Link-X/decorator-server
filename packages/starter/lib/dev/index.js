@@ -48,6 +48,7 @@ class Container {
             });
         };
         this.resCls = res;
+        this.init();
     }
     bind(cls) {
         const meta = (0, decorator_1.assemble)(cls);
@@ -107,10 +108,8 @@ class Container {
     async init() {
         await (0, utils_1.loopDir)(this.rootPath, this.expCls);
         this.installKoa();
-        console.log(JSON.stringify(this.provideGroup.get('SomeClass')));
         console.log('http://localhost:9301/');
     }
 }
 exports.Container = Container;
-const containerCls = new Container(new setResponse());
-containerCls.init();
+new Container(new setResponse());
