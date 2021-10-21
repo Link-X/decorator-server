@@ -17,6 +17,6 @@ const createMappingDecorator = (method) => {
         };
     };
 };
-exports.Get = createMappingDecorator("GET");
-exports.Post = createMappingDecorator("POST");
-exports.All = createMappingDecorator("ALL");
+exports.Get = createMappingDecorator('GET');
+exports.Post = createMappingDecorator('POST');
+exports.All = createMappingDecorator('ALL');

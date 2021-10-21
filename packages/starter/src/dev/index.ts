@@ -1,5 +1,5 @@
 import path from 'path';
-import Koa from 'koa';
+import Koa, { Context } from 'koa';
 import Router from '@koa/router';
 import KoaBody from 'koa-body';
 
@@ -13,26 +13,81 @@ const contentTypes: any = {
   form: 'multipart/form-data',
 };
 
+type methodName = 'get' | 'post' | 'all' | 'head' | 'options';
 export class setResponse {
-  [string: string]: (ctx: ctxType, item: responseType) => void;
+  modify: (response: responseType[], ctx: Context) => void;
+  constructor() {
+    this.modify = (response: responseType[], ctx: Context) => {
+      // @ts-expect-error: TODO
+      response.forEach((v) => this[v.type](ctx, v));
+    };
+  }
 
-  responseContentType(ctx: ctxType, item: responseType) {
+  responseContentType(ctx: Context, item: responseType) {
     const type =
       contentTypes[item.contentType] || contentTypes[item.contentType];
     ctx.set('content-type', type);
   }
 
-  responseHttpCode(ctx: ctxType, item: responseType) {
-    ctx.response.status = item.code;
+  responseHttpCode(ctx: Context, item: responseType) {
+    ctx.response.status = item.code as number;
   }
 
-  responseHeader(ctx: ctxType, item: responseType) {
+  responseHeader(ctx: Context, item: responseType) {
     ctx.set(item.setHeaders);
   }
 
-  responseRedirect(ctx: ctxType, item: responseType) {
-    ctx.response.redirect(item.url);
+  responseRedirect(ctx: Context, item: responseType) {
+    ctx.response.redirect(item.url as string);
     this.responseHttpCode(ctx, item);
+  }
+}
+
+class setRouters {
+  createRouter: (
+    meta: metaType,
+    clsObj: any,
+  ) => Router<Koa.DefaultState, Koa.DefaultContext> | undefined;
+  setResponse: setResponse;
+  constructor() {
+    this.setResponse = new setResponse();
+    this.createRouter = (meta, clsObj: any) => {
+      const { controller = [], router = [] } = meta;
+      if (!(controller && controller.length)) return;
+      const routerCls = new Router({
+        prefix: controller[0].prefix || undefined,
+      });
+
+      router.forEach((v) => {
+        const { route = [] } = v;
+        const pathArr = (route || []).map((v) => v.path);
+
+        const requestMethod = route[0].requestMethod.toLocaleLowerCase();
+        routerCls[requestMethod as methodName](pathArr, async (ctx: Context, next: any) => {
+          await this.routerCallback(ctx, clsObj, v);
+          next();
+        });
+      });
+      return routerCls;
+    };
+  }
+
+  async routerCallback(ctx: Context, obj: any, v: routerType) {
+    const { methodName, response = [] } = v;
+    let result;
+    const fn = obj[methodName];
+    if (isPromise(fn)) {
+      result = await fn(ctx);
+    } else {
+      result = fn(ctx);
+    }
+    if (isPromise(result)) {
+      await result;
+    }
+    this.setResponse.modify(response, ctx);
+    if (result) {
+      ctx.body = result;
+    }
   }
 }
 
@@ -40,9 +95,9 @@ export class Container {
   provideGroup = new Map<string, itemType>();
   app: Koa;
   rootPath = path.resolve(process.cwd(), 'lib');
-  resCls: setResponse;
-  constructor(res: setResponse) {
-    this.resCls = res;
+  setRouters: setRouters;
+  constructor(res: setRouters) {
+    this.setRouters = res;
     this.init();
   }
 
@@ -62,52 +117,10 @@ export class Container {
     this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
   }
 
-  async routerCallback(ctx: ctxType, obj: any, v: routerType) {
-    const { methodName, response = [] } = v;
-    let result;
-    if (isPromise(obj[methodName])) {
-      result = await obj[methodName](ctx);
-    } else {
-      result = obj[methodName](ctx);
-    }
-    if (isPromise(result)) {
-      await result
-    }
-    response.forEach((v) => this.resCls[v.type](ctx, v));
-    if (result) {
-      ctx.body = result;
-    }
-  }
-
   koaRouterInit(meta: metaType, clsObj: any) {
-    const { controller = [], router = [] } = meta;
-    if (!(controller && controller.length)) return;
-    const routerCls = new Router({
-      prefix: controller[0].prefix || undefined,
-    });
-    router.forEach((v) => {
-      const { route = [] } = v;
-      const pathArr = (route || []).map((v) => v.path);
-
-      const routerFunc = async (ctx: ctxType, next: any) => {
-        await this.routerCallback(ctx, clsObj, v);
-        next();
-      };
-
-      const { requestMethod } = route[0];
-      if (requestMethod === 'GET') {
-        routerCls.get(pathArr, (ctx, next) => routerFunc(ctx, next));
-      }
-
-      if (requestMethod === 'POST') {
-        routerCls.post(pathArr, (ctx, next) => routerFunc(ctx, next));
-      }
-
-      if (requestMethod === 'ALL') {
-        routerCls.all(pathArr, (ctx, next) => routerFunc(ctx, next));
-      }
-    });
-    this.app.use(routerCls.routes());
+    const route = this.setRouters.createRouter(meta, clsObj);
+    if (!route) return;
+    this.app.use(route.routes());
   }
 
   injectInit(inject: injectType, clsObj: any) {
@@ -136,4 +149,4 @@ export class Container {
   }
 }
 
-new Container(new setResponse());
+new Container(new setRouters());

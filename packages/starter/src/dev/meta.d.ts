@@ -43,11 +43,3 @@ type itemType = {
   cls: any;
   meta: metaType;
 };
-
-
-type ctxType = Koa.ParameterizedContext<
-  Koa.DefaultState,
-  Koa.DefaultContext &
-    Router.RouterParamContext<Koa.DefaultState, Koa.DefaultContext>,
-  any
->;

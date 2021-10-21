@@ -35,20 +35,20 @@ export class SomeClass {
   @Get('/ccc/:id')
   @SetHeader({ accept: '*/*', test: 'cecece' })
   @ContentType('text')
-  @Redirect('/api/abc')
-  someGetMethod() {
-    return 'hello world api/ccc`';
-  }
-
-  @HttpCode(200)
-  @Get('/abc')
-  async redirectPath() {
+  @Redirect('/api/redirect')
+  async someGetMethod() {
     const awaitFunc = () => {
       return new Promise((res) => {
         setTimeout(() => res('3s -- redirect'), 3000);
       });
     };
     return await awaitFunc();
+  }
+
+  @HttpCode(200)
+  @Get('/redirect')
+  async redirectPath() {
+    return 'hello world /redirect';
   }
 
   @Post('/b')

@@ -9,9 +9,9 @@
 `cd packages/exp`  
 `yarn dev`  
 
-访问：http://localhost:9301/api  
+访问：http://localhost:9301  
 
-##### base
+##### base 基础示例
 ```javascript
 import {
   Get,
@@ -36,7 +36,7 @@ export class SomeClass {
 }
 ```
 
-##### Inject
+##### Provide Inject 依赖注入
 ```javascript
 ...
 
@@ -54,13 +54,14 @@ export class SomeClass {
   @Inject()
   inj: Inj
   @Get('/page')
-  someGetMethod() {
+  someGetMethod(ctx) {
+    console.lgo(ctx)
     return `hello world${this.inj.func()}`;
   }
 }
 ```
 
-##### Redirect
+##### Redirect 重定向
 ```javascript
 ... 
 @Provide()
@@ -68,19 +69,18 @@ export class SomeClass {
 export class SomeClass {
   @Get('/page')
   @Redirect('/test/abc')
-  someGetMethod() {
-    this.inj.func()
-    return `hello world${id}`;
-  }
-
-  @Get('/abc)
-  async someGetMethod2()   {
-    const awaitFunc = () => {
+  async someGetMethod() {
+     const awaitFunc = () => {
       return new Promise(res => {
         setTimeout(() => res('3s -- redirect'), 3000)
       })
     }
     return await awaitFunc()
+  }
+
+  @Get('/abc)
+  someGetMethod2()   {
+    return `hello world /abc`
   }
 }
 ```

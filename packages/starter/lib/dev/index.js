@@ -17,6 +17,12 @@ const contentTypes = {
     form: 'multipart/form-data',
 };
 class setResponse {
+    constructor() {
+        this.modify = (response, ctx) => {
+            // @ts-expect-error: TODO
+            response.forEach((v) => this[v.type](ctx, v));
+        };
+    }
     responseContentType(ctx, item) {
         const type = contentTypes[item.contentType] || contentTypes[item.contentType];
         ctx.set('content-type', type);
@@ -33,6 +39,56 @@ class setResponse {
     }
 }
 exports.setResponse = setResponse;
+class setRouters {
+    constructor() {
+        this.setResponse = new setResponse();
+        this.createRouter = (meta, clsObj) => {
+            const { controller = [], router = [] } = meta;
+            if (!(controller && controller.length))
+                return;
+            const routerCls = new router_1.default({
+                prefix: controller[0].prefix || undefined,
+            });
+            router.forEach((v) => {
+                const { route = [] } = v;
+                const pathArr = (route || []).map((v) => v.path);
+                const routerFunc = async (ctx, next) => {
+                    await this.routerCallback(ctx, clsObj, v);
+                    next();
+                };
+                const { requestMethod } = route[0];
+                if (requestMethod === 'GET') {
+                    routerCls.get(pathArr, routerFunc);
+                }
+                if (requestMethod === 'POST') {
+                    routerCls.post(pathArr, routerFunc);
+                }
+                if (requestMethod === 'ALL') {
+                    routerCls.all(pathArr, routerFunc);
+                }
+            });
+            return routerCls;
+        };
+    }
+    async routerCallback(ctx, obj, v) {
+        const { methodName, response = [] } = v;
+        let result;
+        const fn = obj[methodName];
+        if ((0, decorator_1.isPromise)(fn)) {
+            result = await fn(ctx);
+        }
+        else {
+            result = fn(ctx);
+        }
+        if ((0, decorator_1.isPromise)(result)) {
+            await result;
+        }
+        this.setResponse.modify(response, ctx);
+        if (result) {
+            ctx.body = result;
+        }
+    }
+}
 class Container {
     constructor(res) {
         this.provideGroup = new Map();
@@ -47,7 +103,7 @@ class Container {
                 }
             });
         };
-        this.resCls = res;
+        this.setRouters = res;
         this.init();
     }
     bind(cls) {
@@ -56,49 +112,11 @@ class Container {
             return;
         this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
     }
-    async routerCallback(ctx, obj, v) {
-        const { methodName, response = [] } = v;
-        let result;
-        if ((0, decorator_1.isPromise)(obj[methodName])) {
-            result = await obj[methodName](ctx);
-        }
-        else {
-            result = obj[methodName](ctx);
-        }
-        if ((0, decorator_1.isPromise)(result)) {
-            await result;
-        }
-        response.forEach((v) => this.resCls[v.type](ctx, v));
-        if (result) {
-            ctx.body = result;
-        }
-    }
     koaRouterInit(meta, clsObj) {
-        const { controller = [], router = [] } = meta;
-        if (!(controller && controller.length))
+        const route = this.setRouters.createRouter(meta, clsObj);
+        if (!route)
             return;
-        const routerCls = new router_1.default({
-            prefix: controller[0].prefix || undefined,
-        });
-        router.forEach((v) => {
-            const { route = [] } = v;
-            const pathArr = (route || []).map((v) => v.path);
-            const routerFunc = async (ctx, next) => {
-                await this.routerCallback(ctx, clsObj, v);
-                next();
-            };
-            const { requestMethod } = route[0];
-            if (requestMethod === 'GET') {
-                routerCls.get(pathArr, (ctx, next) => routerFunc(ctx, next));
-            }
-            if (requestMethod === 'POST') {
-                routerCls.post(pathArr, (ctx, next) => routerFunc(ctx, next));
-            }
-            if (requestMethod === 'ALL') {
-                routerCls.all(pathArr, (ctx, next) => routerFunc(ctx, next));
-            }
-        });
-        this.app.use(routerCls.routes());
+        this.app.use(route.routes());
     }
     injectInit(inject, clsObj) {
         if (!inject)
@@ -125,4 +143,4 @@ class Container {
     }
 }
 exports.Container = Container;
-new Container(new setResponse());
+new Container(new setRouters());

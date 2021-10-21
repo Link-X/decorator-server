@@ -6,8 +6,8 @@ export declare class Test {
 export declare class SomeClass {
     useTest: Test;
     first: first;
-    someGetMethod(): string;
-    redirectPath(): Promise<unknown>;
+    someGetMethod(): Promise<unknown>;
+    redirectPath(): Promise<string>;
     somePostMethod(key: string): {
         a: number;
         b: number;

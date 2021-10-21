@@ -34,16 +34,16 @@ Test = __decorate([
 ], Test);
 exports.Test = Test;
 let SomeClass = class SomeClass {
-    someGetMethod() {
-        return 'hello world api/ccc`';
-    }
-    async redirectPath() {
+    async someGetMethod() {
         const awaitFunc = () => {
             return new Promise((res) => {
                 setTimeout(() => res('3s -- redirect'), 3000);
             });
         };
         return await awaitFunc();
+    }
+    async redirectPath() {
+        return 'hello world /redirect';
     }
     somePostMethod(key) {
         console.log(key);
@@ -63,14 +63,14 @@ __decorate([
     (0, decorator_1.Get)('/ccc/:id'),
     (0, decorator_1.SetHeader)({ accept: '*/*', test: 'cecece' }),
     (0, decorator_1.ContentType)('text'),
-    (0, decorator_1.Redirect)('/api/abc'),
+    (0, decorator_1.Redirect)('/api/redirect'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], SomeClass.prototype, "someGetMethod", null);
 __decorate([
     (0, decorator_1.HttpCode)(200),
-    (0, decorator_1.Get)('/abc'),
+    (0, decorator_1.Get)('/redirect'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
