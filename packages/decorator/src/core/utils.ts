@@ -24,8 +24,7 @@ export const isConstructor = (val: string): boolean => {
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
 
 /**
- * get parameter name from function
- * @param func
+ * 获取类型名字
  */
 export function getParamNames(func: any): string[] {
   const fnStr = func.toString().replace(STRIP_COMMENTS, '');
@@ -42,6 +41,7 @@ export function getParamNames(func: any): string[] {
   return result;
 }
 
+/** 解析router 装饰器的元数据 */
 export const mapRouter = (instance: any): metaType.routerMetaList => {
   const prototype = instance.prototype;
 
@@ -96,6 +96,7 @@ const getObjectDef = (cls: any) => {
   return Reflect.getMetadata(OBJ_DEF_CLS, cls);
 };
 
+/** 解析class的元数据 */
 export const assemble = (cls: any) => {
   const base = getBase(cls);
   if (!(base && base.id)) {

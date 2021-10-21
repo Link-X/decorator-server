@@ -17,6 +17,7 @@ type methodName = 'get' | 'post' | 'all' | 'head' | 'options';
 export class setResponse {
   modify: (response: responseType[], ctx: Context) => void;
   constructor() {
+    /** 根据meta修改response */
     this.modify = (response: responseType[], ctx: Context) => {
       // @ts-expect-error: TODO
       response.forEach((v) => this[v.type](ctx, v));
@@ -51,6 +52,7 @@ class setRouters {
   setResponse: setResponse;
   constructor() {
     this.setResponse = new setResponse();
+    /** 根据meta创建route */
     this.createRouter = (meta, clsObj: any) => {
       const { controller = [], router = [] } = meta;
       if (!(controller && controller.length)) return;
@@ -72,6 +74,7 @@ class setRouters {
     };
   }
 
+  /** 执行router装饰器的函数 */
   async routerCallback(ctx: Context, obj: any, v: routerType) {
     const { methodName, response = [] } = v;
     let result;
@@ -101,6 +104,7 @@ export class Container {
     this.init();
   }
 
+  /** 迭代所有src下的ts文件初始化meta 和require 文件 */
   expCls = (pathUrl: string, name: string, isDir: boolean) => {
     if (isDir) return;
     const def = Object.values(require(path.resolve(pathUrl, name)));
@@ -128,6 +132,7 @@ export class Container {
     Object.keys(inject).forEach((v) => {
       const item = inject[v][0];
       const providMeta = this.provideGroup.get(item.injectVal) as itemType;
+      /** 注入 */
       clsObj[v] = providMeta.cls;
     });
   }
@@ -135,6 +140,7 @@ export class Container {
   installKoa() {
     this.app = new Koa();
     this.app.use(KoaBody());
+    // 根据保存的meta创建对应执行函数
     for (const provideItem of this.provideGroup.values()) {
       this.injectInit(provideItem.meta.inject, provideItem.cls);
       this.koaRouterInit(provideItem.meta, provideItem.cls);
@@ -143,6 +149,7 @@ export class Container {
   }
 
   async init() {
+    // 迭代所有src下的ts文件初始化meta 和require 文件
     await loopDir(this.rootPath, this.expCls);
     this.installKoa();
     console.log('http://localhost:9301/');

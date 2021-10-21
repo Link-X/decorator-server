@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { OBJ_DEF_CLS } from "../variable/reflect-var";
 
+/** 保存装饰器元数据 */
 export const saveMeta = (
   target: any,
   data: any,
@@ -13,6 +14,7 @@ export const saveMeta = (
   }
   let m: Map<string, any>;
 
+  // 是否使用过相同的装饰器
   if (Reflect.hasOwnMetadata(metaKey, target)) {
     m = Reflect.getMetadata(metaKey, target);
   } else {
@@ -25,6 +27,7 @@ export const saveMeta = (
   Reflect.defineMetadata(metaKey, m, target);
 };
 
+/** 保存特数据装饰器元数据 */
 export function saveObjectDefProps(target: any, props = {}) {
    if (typeof target === "object" && target.constructor) {
     target = target.constructor;
