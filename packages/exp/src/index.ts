@@ -58,7 +58,3 @@ export class SomeClass {
     return { a: 1, b: 3 };
   }
 }
-
-// const provideGroup = new Map();
-// console.log(JSON.stringify(assemble(Test, provideGroup)));
-// console.log(JSON.stringify(assemble(SomeClass, provideGroup)));
