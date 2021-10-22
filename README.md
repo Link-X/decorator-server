@@ -36,6 +36,7 @@ import {
   Post,
   Controller,
   Provide,
+  Inject
 } from '@decorator-server/decorator'
 // 只要有定义了provide装饰器的class 都允许被
 @Provide()
@@ -86,8 +87,8 @@ export class SomeClass {
 ```
 
 ##### 生命周期
-有时候我们可能会需要 在http 启动前的时候或者结束的时候做点什么。  
-在src下新建init.ts
+在http 启动前 和 结束时候的钩子。  
+在src下新建init.ts 文件
 ../src/init.ts
 ```javascript
 import { LifeCycle, Container } from '@decorator-server/decorator';
@@ -104,12 +105,28 @@ export class Init implements LifeCycle {
   async onReady(con: Container, app: Application) {
     app.use(KoaBody())
 
-    // 或者注册全局依赖 (注意只能是class)
-    cn.registerObject('sequelize', abc);
+    // 注册全局依赖 (注意只能是class)
+    cn.registerObject('abc', abc);
   }
 
   async onStop() {
     console.log('stop');
   }
 }
+
+// 使用全局依赖
+// ...xxx.ts
+import {
+  Provide,
+  Inject
+} from '@decorator-server/decorator'
+class ddd {
+  @Inject()
+  abc;
+
+  func() {
+    this.abc.query()
+  }
+}
+
 ```
