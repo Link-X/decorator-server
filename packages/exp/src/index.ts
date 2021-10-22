@@ -18,11 +18,10 @@ import { first } from './test/a';
 export class Test {
   @Init()
   aaaa() {
-    console.log(12344);
+    console.log('test aaa');
   }
   a = 3;
 }
-
 @Provide()
 @Controller('/api')
 export class SomeClass {
@@ -31,12 +30,17 @@ export class SomeClass {
   @Inject()
   first: first;
 
+  @Inject()
+  sequelize;
+
   @Get('/')
   @Get('/ccc/:id')
   @SetHeader({ accept: '*/*', test: 'cecece' })
   @ContentType('text')
   @Redirect('/api/redirect')
   async someGetMethod() {
+    this.useTest.aaaa()
+    this.sequelize.query()
     const awaitFunc = () => {
       return new Promise((res) => {
         setTimeout(() => res('3s -- redirect'), 3000);
@@ -49,6 +53,11 @@ export class SomeClass {
   @Get('/redirect')
   async redirectPath() {
     return 'hello world /redirect';
+  }
+
+  @Get('/null')
+  getNull() {
+    console.log('/null')
   }
 
   @Post('/b')

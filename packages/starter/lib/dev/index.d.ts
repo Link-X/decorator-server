@@ -10,21 +10,29 @@ export declare class setResponse {
 }
 declare class setRouters {
     createRouter: (meta: metaType, clsObj: any) => Router<Koa.DefaultState, Koa.DefaultContext> | undefined;
-    setResponse: setResponse;
+    private setResponse;
     constructor();
-    routerCallback(ctx: Context, obj: any, v: routerType): Promise<void>;
+    /** 执行router装饰器的函数 */
+    private routerCallback;
 }
 export declare class Container {
     provideGroup: Map<string, itemType>;
+    globalInject: Map<string, any>;
     app: Koa;
     rootPath: string;
-    setRouters: setRouters;
+    initPath: string;
+    private setRouters;
     constructor(res: setRouters);
-    expCls: (pathUrl: string, name: string, isDir: boolean) => void;
-    bind(cls: any): void;
-    koaRouterInit(meta: metaType, clsObj: any): void;
-    injectInit(inject: injectType, clsObj: any): void;
-    installKoa(): void;
-    init(): Promise<void>;
+    /** 迭代所有src下的ts文件初始化meta 和require 文件 */
+    private expCls;
+    private provideBind;
+    /** 注册全局依赖api, 这个api只在init.ts 的onReady内有效 */
+    registerObject(identifier: string, target: any, params?: any): void;
+    /** 初始化koa router */
+    private koaRouterInit;
+    private injectInit;
+    private initFile;
+    private installKoa;
+    private init;
 }
 export {};

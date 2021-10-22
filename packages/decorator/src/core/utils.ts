@@ -144,5 +144,4 @@ export const isPromise = (val: any) => {
   if (!val) return false;
   const name = val.constructor.name;
   if (name === 'AsyncFunction' || name === 'Promise') return true;
-  console.log(name,val)
 };

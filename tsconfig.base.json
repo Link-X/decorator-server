@@ -19,11 +19,7 @@
     "declaration": true,
     "noEmitOnError": false,
     "skipLibCheck": true,
-    "types": ["node"],
+    "types": ["node"]
   },
-  "exclude": [
-    "node_modules",
-    "lib"
-  ]
+  "exclude": ["node_modules", "lib"]
 }
-

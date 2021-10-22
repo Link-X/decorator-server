@@ -15,8 +15,6 @@
 ```javascript
 import {
   Get,
-  Query,
-  Post,
   Controller,
   Provide,
 } from '@decorator-server/decorator';
@@ -24,26 +22,27 @@ import {
 @Provide()
 @Controller('/')
 export class SomeClass {
+  
   @Get('/page')
-  someGetMethod(@Query() id: string) {
-    return `hello world${id}`;
-  }
-
-  @Post('/api')
-  somePostMethod(@Query() params: any) {
-    console.log(params)
+  someGetMethod() {
+    return `hello world`;
   }
 }
 ```
 
 ##### Provide Inject 依赖注入
 ```javascript
-...
-
+import {
+  Post,
+  Controller,
+  Provide,
+} from '@decorator-server/decorator'
+// 只要有定义了provide装饰器的class 都允许被
 @Provide()
 export class Inj {
   abc = 'abc'
   func() {
+    //... 
     return this.abc
   }
 }
@@ -51,9 +50,10 @@ export class Inj {
 @Provide()
 @Controller('/')
 export class SomeClass {
+  // 注入依赖
   @Inject()
   inj: Inj
-  @Get('/page')
+  @Post('/page')
   someGetMethod(ctx) {
     console.lgo(ctx)
     return `hello world${this.inj.func()}`;
@@ -81,6 +81,34 @@ export class SomeClass {
   @Get('/abc)
   someGetMethod2()   {
     return `hello world /abc`
+  }
+}
+```
+
+##### 生命周期
+有时候我们可能会想 在http 启动的时候或者结束的时候做点什么。  
+../src/init.ts
+```javascript
+import { LifeCycle, Container } from '@decorator-server/decorator';
+import Application from 'koa';
+import KoaBody from 'koa-body';
+
+class abc {
+  query(a: number) {
+    console.log(a, 'abc')
+  }
+}
+
+export class Init implements LifeCycle {
+  async onReady(con: Container, app: Application) {
+    app.use(KoaBody())
+
+    // 或者注册全局依赖 (注意只能是class)
+    cn.registerObject('sequelize', abc);
+  }
+
+  async onStop() {
+    console.log('stop');
   }
 }
 ```

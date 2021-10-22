@@ -16,8 +16,7 @@ const isConstructor = (val) => {
 exports.isConstructor = isConstructor;
 const STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
 /**
- * get parameter name from function
- * @param func
+ * 获取类型名字
  */
 function getParamNames(func) {
     const fnStr = func.toString().replace(STRIP_COMMENTS, '');
@@ -33,6 +32,7 @@ function getParamNames(func) {
     return result;
 }
 exports.getParamNames = getParamNames;
+/** 解析router 装饰器的元数据 */
 const mapRouter = (instance) => {
     const prototype = instance.prototype;
     const methodsNames = Object.getOwnPropertyNames(prototype).filter((item) => !(0, exports.isConstructor)(item) && (0, exports.isFunction)(prototype[item]));
@@ -78,6 +78,7 @@ const getController = (cls) => {
 const getObjectDef = (cls) => {
     return Reflect.getMetadata(reflect_var_1.OBJ_DEF_CLS, cls);
 };
+/** 解析class的元数据 */
 const assemble = (cls) => {
     const base = getBase(cls);
     if (!(base && base.id)) {
@@ -121,6 +122,5 @@ const isPromise = (val) => {
     const name = val.constructor.name;
     if (name === 'AsyncFunction' || name === 'Promise')
         return true;
-    console.log(name, val);
 };
 exports.isPromise = isPromise;

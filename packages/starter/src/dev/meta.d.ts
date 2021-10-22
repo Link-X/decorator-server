@@ -28,6 +28,9 @@ type routerType = {
   response?: responseType[];
 };
 
+
+type methodNameType = 'get' | 'post' | 'all' | 'head' | 'options';
+
 type injectType = {
   [string: string]: { value: string; key: string; injectVal: string }[];
 };

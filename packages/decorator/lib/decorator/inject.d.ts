@@ -1,1 +1,1 @@
-export declare function Inject(): (target: any, targetKey: string, index?: number | undefined) => void;
+export declare function Inject(key?: string): (target: any, targetKey: string, index?: number | undefined) => void;

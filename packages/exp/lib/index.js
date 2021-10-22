@@ -20,7 +20,7 @@ let Test = class Test {
         this.a = 3;
     }
     aaaa() {
-        console.log(12344);
+        console.log('test aaa');
     }
 };
 __decorate([
@@ -35,6 +35,8 @@ Test = __decorate([
 exports.Test = Test;
 let SomeClass = class SomeClass {
     async someGetMethod() {
+        this.useTest.aaaa();
+        this.sequelize.query();
         const awaitFunc = () => {
             return new Promise((res) => {
                 setTimeout(() => res('3s -- redirect'), 3000);
@@ -44,6 +46,9 @@ let SomeClass = class SomeClass {
     }
     async redirectPath() {
         return 'hello world /redirect';
+    }
+    getNull() {
+        console.log('/null');
     }
     somePostMethod(key) {
         console.log(key);
@@ -58,6 +63,10 @@ __decorate([
     (0, decorator_1.Inject)(),
     __metadata("design:type", a_1.first)
 ], SomeClass.prototype, "first", void 0);
+__decorate([
+    (0, decorator_1.Inject)(),
+    __metadata("design:type", Object)
+], SomeClass.prototype, "sequelize", void 0);
 __decorate([
     (0, decorator_1.Get)('/'),
     (0, decorator_1.Get)('/ccc/:id'),
@@ -76,6 +85,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], SomeClass.prototype, "redirectPath", null);
 __decorate([
+    (0, decorator_1.Get)('/null'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], SomeClass.prototype, "getNull", null);
+__decorate([
     (0, decorator_1.Post)('/b'),
     (0, decorator_1.ContentType)('json'),
     __param(0, (0, decorator_1.Query)()),
@@ -88,6 +103,3 @@ SomeClass = __decorate([
     (0, decorator_1.Controller)('/api')
 ], SomeClass);
 exports.SomeClass = SomeClass;
-// const provideGroup = new Map();
-// console.log(JSON.stringify(assemble(Test, provideGroup)));
-// console.log(JSON.stringify(assemble(SomeClass, provideGroup)));

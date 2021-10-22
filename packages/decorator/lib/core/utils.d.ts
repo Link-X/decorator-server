@@ -2,11 +2,12 @@ import 'reflect-metadata';
 export declare const isFunction: (val: any) => boolean;
 export declare const isConstructor: (val: string) => boolean;
 /**
- * get parameter name from function
- * @param func
+ * 获取类型名字
  */
 export declare function getParamNames(func: any): string[];
+/** 解析router 装饰器的元数据 */
 export declare const mapRouter: (instance: any) => metaType.routerMetaList;
+/** 解析class的元数据 */
 export declare const assemble: (cls: any) => {
     base: any;
     controller: any;

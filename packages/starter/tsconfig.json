@@ -4,10 +4,8 @@
     "rootDir": "./src",
     "outDir": "./lib",
     "experimentalDecorators": true,
-    "traceResolution": false
+    "traceResolution": false,
+    "noImplicitThis": true
   },
   "include": ["src/**/*"]
 }
-
-
-

@@ -7,10 +7,11 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "dev": "starter"
+    "dev": "starter --port=9031 --debugger"
   },
   "dependencies": {
     "@decorator-server/decorator": "^0.12.0",
-    "@decorator-server/starter": "^0.12.0"
+    "@decorator-server/starter": "^0.12.0",
+    "sequelize": "^6.7.0"
   }
 }

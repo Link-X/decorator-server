@@ -11,11 +11,14 @@ const savePropertyInject = (opts) => {
         (0, common_1.saveMeta)(target, { value: targetKey, key: 'inject', injectVal: propertyType.name }, reflect_var_1.INJECT_TARGET, targetKey);
     }
     else {
-        console.log('inject 只允许注入class');
+        (0, common_1.saveMeta)(target, { value: targetKey, key: 'inject', injectVal: targetKey }, reflect_var_1.INJECT_TARGET, targetKey);
     }
 };
-function Inject() {
+function Inject(key) {
     return function (target, targetKey, index) {
+        if (key) {
+            console.log(key);
+        }
         if (typeof index === 'number') {
         }
         else {

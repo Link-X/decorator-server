@@ -20,12 +20,20 @@ const savePropertyInject = (opts: InjectOptions) => {
       targetKey,
     );
   } else {
-    console.log('inject 只允许注入class');
+    saveMeta(
+      target,
+      { value: targetKey, key: 'inject', injectVal: targetKey },
+      INJECT_TARGET,
+      targetKey,
+    );
   }
 };
 
-export function Inject() {
+export function Inject(key?: string) {
   return function (target: any, targetKey: string, index?: number): void {
+    if (key) {
+      console.log(key);
+    }
     if (typeof index === 'number') {
     } else {
       savePropertyInject({ target, targetKey });

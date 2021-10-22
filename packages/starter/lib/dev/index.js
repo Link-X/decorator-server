@@ -7,7 +7,6 @@ exports.Container = exports.setResponse = void 0;
 const path_1 = __importDefault(require("path"));
 const koa_1 = __importDefault(require("koa"));
 const router_1 = __importDefault(require("@koa/router"));
-const koa_body_1 = __importDefault(require("koa-body"));
 const decorator_1 = require("@decorator-server/decorator");
 const utils_1 = require("../utils");
 const contentTypes = {
@@ -18,13 +17,14 @@ const contentTypes = {
 };
 class setResponse {
     constructor() {
+        /** 根据meta修改response */
         this.modify = (response, ctx) => {
             // @ts-expect-error: TODO
             response.forEach((v) => this[v.type](ctx, v));
         };
     }
     responseContentType(ctx, item) {
-        const type = contentTypes[item.contentType] || contentTypes[item.contentType];
+        const type = contentTypes[item.contentType] || item.contentType;
         ctx.set('content-type', type);
     }
     responseHttpCode(ctx, item) {
@@ -42,6 +42,7 @@ exports.setResponse = setResponse;
 class setRouters {
     constructor() {
         this.setResponse = new setResponse();
+        /** 根据meta创建route */
         this.createRouter = (meta, clsObj) => {
             const { controller = [], router = [] } = meta;
             if (!(controller && controller.length))
@@ -52,28 +53,20 @@ class setRouters {
             router.forEach((v) => {
                 const { route = [] } = v;
                 const pathArr = (route || []).map((v) => v.path);
-                const routerFunc = async (ctx, next) => {
+                const requestMethod = route[0].requestMethod.toLocaleLowerCase();
+                routerCls[requestMethod](pathArr, async (ctx, next) => {
                     await this.routerCallback(ctx, clsObj, v);
                     next();
-                };
-                const { requestMethod } = route[0];
-                if (requestMethod === 'GET') {
-                    routerCls.get(pathArr, routerFunc);
-                }
-                if (requestMethod === 'POST') {
-                    routerCls.post(pathArr, routerFunc);
-                }
-                if (requestMethod === 'ALL') {
-                    routerCls.all(pathArr, routerFunc);
-                }
+                });
             });
             return routerCls;
         };
     }
+    /** 执行router装饰器的函数 */
     async routerCallback(ctx, obj, v) {
         const { methodName, response = [] } = v;
         let result;
-        const fn = obj[methodName];
+        const fn = obj[methodName].bind(obj);
         if ((0, decorator_1.isPromise)(fn)) {
             result = await fn(ctx);
         }
@@ -92,54 +85,86 @@ class setRouters {
 class Container {
     constructor(res) {
         this.provideGroup = new Map();
+        this.globalInject = new Map();
         this.rootPath = path_1.default.resolve(process.cwd(), 'lib');
+        this.initPath = path_1.default.resolve(this.rootPath, 'init.js');
+        /** 迭代所有src下的ts文件初始化meta 和require 文件 */
         this.expCls = (pathUrl, name, isDir) => {
             if (isDir)
                 return;
-            const def = Object.values(require(path_1.default.resolve(pathUrl, name)));
+            const filePath = path_1.default.resolve(pathUrl, name);
+            if (this.initPath === filePath) {
+                return;
+            }
+            const def = Object.values(require(filePath));
             Object.values(def).forEach((v) => {
                 if ((0, decorator_1.isClass)(v)) {
-                    this.bind(v);
+                    this.provideBind(v);
                 }
             });
         };
         this.setRouters = res;
         this.init();
     }
-    bind(cls) {
+    provideBind(cls) {
         const meta = (0, decorator_1.assemble)(cls);
         if (!meta)
             return;
         this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
     }
+    /** 注册全局依赖api, 这个api只在init.ts 的onReady内有效 */
+    registerObject(identifier, target, params) {
+        if (!(0, decorator_1.isClass)(target)) {
+            throw new Error(`${identifier}: 不是一个class 无法注册`);
+        }
+        this.globalInject.set(`globalInject-${identifier}`, new target(params));
+    }
+    /** 初始化koa router */
     koaRouterInit(meta, clsObj) {
         const route = this.setRouters.createRouter(meta, clsObj);
         if (!route)
             return;
         this.app.use(route.routes());
     }
+    // 注册class 自定义和全局的依赖
     injectInit(inject, clsObj) {
         if (!inject)
             return;
         Object.keys(inject).forEach((v) => {
             const item = inject[v][0];
             const providMeta = this.provideGroup.get(item.injectVal);
+            if (!providMeta) {
+                const globalInjectCls = this.globalInject.get(`globalInject-${item.injectVal}`);
+                clsObj[v] = globalInjectCls;
+                return;
+            }
+            /** 注入 */
             clsObj[v] = providMeta.cls;
         });
     }
-    installKoa() {
+    async initFile() {
+        const cls = require(this.initPath);
+        if ((0, decorator_1.isClass)(cls.default)) {
+            const initCls = new cls.default();
+            await initCls.onReady(this, this.app);
+        }
+    }
+    async installKoa(port) {
         this.app = new koa_1.default();
-        this.app.use((0, koa_body_1.default)());
+        await this.initFile();
+        // 根据保存的meta创建对应执行函数
         for (const provideItem of this.provideGroup.values()) {
             this.injectInit(provideItem.meta.inject, provideItem.cls);
             this.koaRouterInit(provideItem.meta, provideItem.cls);
         }
-        this.app.listen(9301);
+        this.app.listen(port);
     }
     async init() {
+        const args = (0, utils_1.getArg)();
+        const port = await (0, utils_1.portIsOccupied)(+args.port);
         await (0, utils_1.loopDir)(this.rootPath, this.expCls);
-        this.installKoa();
-        console.log('http://localhost:9301/');
+        this.installKoa(port);
+        console.log(`http://localhost:${port}/`);
     }
 }
 exports.Container = Container;
