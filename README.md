@@ -86,7 +86,8 @@ export class SomeClass {
 ```
 
 ##### 生命周期
-有时候我们可能会想 在http 启动的时候或者结束的时候做点什么。  
+有时候我们可能会需要 在http 启动前的时候或者结束的时候做点什么。  
+在src下新建init.ts
 ../src/init.ts
 ```javascript
 import { LifeCycle, Container } from '@decorator-server/decorator';
