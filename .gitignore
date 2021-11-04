@@ -19,3 +19,4 @@ midway_benchmark_app
 *.sqlite
 .env
 
+lib

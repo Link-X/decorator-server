@@ -1,13 +1,13 @@
 import 'reflect-metadata';
 
-import { ROUTER } from '../variable/reflect-var';
+import { ROUTER } from '../variable/meta-name';
 import { saveMeta } from './common';
 
 interface optType {
   middleware: any[];
 }
 
-const createMappingDecorator = (method: metaType.methodType) => {
+const createMethodsDecorator = (method: metaType.methodType) => {
   return (path: string, opt: optType = { middleware: [] }): MethodDecorator => {
     return (target, key: string, descriptor: PropertyDescriptor) => {
       saveMeta(
@@ -26,6 +26,6 @@ const createMappingDecorator = (method: metaType.methodType) => {
   };
 };
 
-export const Get = createMappingDecorator('GET');
-export const Post = createMappingDecorator('POST');
-export const All = createMappingDecorator('ALL');
+export const Get = createMethodsDecorator('GET');
+export const Post = createMethodsDecorator('POST');
+export const All = createMethodsDecorator('ALL');

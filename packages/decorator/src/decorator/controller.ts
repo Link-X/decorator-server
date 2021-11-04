@@ -1,4 +1,4 @@
-import { CONTROLLER } from "../variable/reflect-var";
+import { CONTROLLER } from "../variable/meta-name";
 import { saveMeta } from "./common";
 
 export const Controller = (

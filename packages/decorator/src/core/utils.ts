@@ -8,7 +8,7 @@ import {
   PROVIDE_TARGET,
   INJECT_TARGET,
   OBJ_DEF_CLS,
-} from '../variable/reflect-var';
+} from '../variable/meta-name';
 
 export const isFunction = (val: any): boolean => {
   return typeof val === 'function';

@@ -1,4 +1,4 @@
-import { INJECT_TARGET } from '../variable/reflect-var';
+import { INJECT_TARGET } from '../variable/meta-name';
 import { saveMeta } from './common';
 import { isClass } from '../core/utils';
 

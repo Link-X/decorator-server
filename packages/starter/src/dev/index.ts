@@ -55,9 +55,9 @@ class setRouters {
     this.createRouter = (meta, clsObj: any) => {
       const { controller = [], router = [] } = meta;
       if (!(controller && controller.length)) return;
-
+      const { prefix = undefined } = controller[0];
       const routerCls = new Router({
-        prefix: controller[0].prefix || undefined,
+        prefix: prefix === '/' ? undefined : prefix,
       });
       router.forEach((v) => {
         const { route = [] } = v;

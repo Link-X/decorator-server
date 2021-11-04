@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { OBJ_DEF_CLS } from "../variable/reflect-var";
+import { OBJ_DEF_CLS } from "../variable/meta-name";
 
 /** 保存装饰器元数据 */
 export const saveMeta = (
@@ -28,7 +28,7 @@ export const saveMeta = (
 };
 
 /** 保存特数据装饰器元数据 */
-export function saveObjectDefProps(target: any, props = {}) {
+export function lifeCycle(target: any, props = {}) {
    if (typeof target === "object" && target.constructor) {
     target = target.constructor;
   }

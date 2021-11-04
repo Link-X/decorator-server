@@ -4,7 +4,7 @@ import {
   WEB_RESPONSE_REDIRECT,
   WEB_RESPONSE_CONTENT_TYPE,
   WEB_RESPONSE_HEADER
-} from "../variable/reflect-var";
+} from "../variable/meta-name";
 import { saveMeta } from "./common";
 
 const createResponseDecorator = (data: any) => {
