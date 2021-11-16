@@ -24,6 +24,7 @@ export const saveMeta = (
     m.set(dataKey, []);
   }
   m.get(dataKey).push(data);
+  // 通过defineMetadata. 保存
   Reflect.defineMetadata(metaKey, m, target);
 };
 

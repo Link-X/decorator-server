@@ -1,98 +1,10 @@
 import path from 'path';
-import Koa, { Context } from 'koa';
-import Router from '@koa/router';
+import Koa from 'koa';
+import fs from 'fs';
 
-import { assemble, isClass, isPromise } from '@decorator-server/decorator';
+import { assemble, isClass } from '@decorator-server/decorator';
 import { loopDir, portIsOccupied, getArg } from '../utils';
-
-const contentTypes: { [key: string]: string } = {
-  html: 'text/html',
-  json: 'application/json',
-  text: 'text/plain',
-  form: 'multipart/form-data',
-};
-
-export class setResponse {
-  public modify: (response: responseType[], ctx: Context) => void;
-
-  constructor() {
-    /** 根据meta修改response */
-    this.modify = (response: responseType[], ctx: Context) => {
-      // @ts-expect-error: TODO
-      response.forEach((v) => this[v.type](ctx, v));
-    };
-  }
-
-  responseContentType(ctx: Context, item: responseType) {
-    const type = contentTypes[item.contentType] || item.contentType;
-    ctx.set('content-type', type);
-  }
-
-  responseHttpCode(ctx: Context, item: responseType) {
-    ctx.response.status = item.code as number;
-  }
-
-  responseHeader(ctx: Context, item: responseType) {
-    ctx.set(item.setHeaders);
-  }
-
-  responseRedirect(ctx: Context, item: responseType) {
-    ctx.response.redirect(item.url as string);
-    this.responseHttpCode(ctx, item);
-  }
-}
-
-class setRouters {
-  public createRouter: (
-    meta: metaType,
-    clsObj: any,
-  ) => Router<Koa.DefaultState, Koa.DefaultContext> | undefined;
-  private setResponse: setResponse;
-
-  constructor() {
-    this.setResponse = new setResponse();
-    /** 根据meta创建route */
-    this.createRouter = (meta, clsObj: any) => {
-      const { controller = [], router = [] } = meta;
-      if (!(controller && controller.length)) return;
-      const { prefix = undefined } = controller[0];
-      const routerCls = new Router({
-        prefix: prefix === '/' ? undefined : prefix,
-      });
-      router.forEach((v) => {
-        const { route = [] } = v;
-        const pathArr = (route || []).map((v) => v.path);
-        const requestMethod =
-          route[0].requestMethod.toLocaleLowerCase() as methodNameType;
-        routerCls[requestMethod](pathArr, async (ctx: Context, next: any) => {
-          await this.routerCallback(ctx, clsObj, v);
-          next();
-        });
-      });
-      return routerCls;
-    };
-  }
-
-  /** 执行router装饰器的函数 */
-  private async routerCallback(ctx: Context, obj: any, v: routerType) {
-    const { methodName, response = [] } = v;
-    let result;
-    const fn = obj[methodName].bind(obj);
-    if (isPromise(fn)) {
-      result = await fn(ctx);
-    } else {
-      result = fn(ctx);
-    }
-    if (isPromise(result)) {
-      await result;
-    }
-
-    this.setResponse.modify(response, ctx);
-    if (result) {
-      ctx.body = result;
-    }
-  }
-}
+import SetRouters from './set-router';
 
 export class Container {
   public provideGroup = new Map<string, itemType>();
@@ -100,9 +12,9 @@ export class Container {
   public app: Koa;
   public rootPath = path.resolve(process.cwd(), 'lib');
   public initPath = path.resolve(this.rootPath, 'init.js');
-  private setRouters: setRouters;
+  private setRouters: SetRouters;
 
-  constructor(res: setRouters) {
+  constructor(res: SetRouters) {
     this.setRouters = res;
     this.init();
   }
@@ -165,10 +77,15 @@ export class Container {
   }
 
   private async initFile() {
-    const cls = require(this.initPath);
-    if (isClass(cls.default)) {
-      const initCls = new cls.default();
-      await initCls.onReady(this, this.app);
+    try {
+      await fs.statSync(this.initPath);
+      const cls = require(this.initPath);
+      if (isClass(cls.default)) {
+        const initCls = new cls.default();
+        await initCls.onReady(this, this.app);
+      }
+    } catch (err) {
+      console.log('没找到init文件');
     }
   }
 
@@ -192,4 +109,4 @@ export class Container {
   }
 }
 
-new Container(new setRouters());
+new Container(new SetRouters());

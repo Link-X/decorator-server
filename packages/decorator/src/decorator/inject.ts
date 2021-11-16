@@ -1,6 +1,6 @@
 import { INJECT_TARGET } from '../variable/meta-name';
 import { saveMeta } from './common';
-import { isClass } from '../core/utils';
+import { isClass } from '../utils/utils';
 
 interface InjectOptions {
   target: any;

@@ -1,3 +1,3 @@
 export * from './decorator'
-export * from './core/utils'
+export * from './utils/utils'
 export * from './interface'

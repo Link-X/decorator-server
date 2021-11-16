@@ -1,4 +1,4 @@
-import { getParamNames } from '../core/utils';
+import { getParamNames } from '../utils/utils';
 import { ROUTER_PARAMS } from '../variable/meta-name';
 import { saveMeta } from './common';
 

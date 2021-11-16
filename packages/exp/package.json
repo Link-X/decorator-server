@@ -6,8 +6,10 @@
   "main": "./lib",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "dev": "starter --port=9031 --debugger"
+    "build": "npm run clean && tsc",
+    "clean": "rimraf -rf ./lib",
+    "dev": "starter --port=9031 --debugger",
+    "ind": "node ./lib/index.js"
   },
   "dependencies": {
     "@decorator-server/decorator": "^0.12.0",
