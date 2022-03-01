@@ -19,6 +19,38 @@ export class Container {
     this.init();
   }
 
+  private async init() {
+    const args = getArg();
+    const port = await portIsOccupied(+args.port);
+    await loopDir(this.rootPath, this.expCls);
+    this.installKoa(port);
+    console.log(`http://localhost:${port}/`);
+  }
+
+  private async installKoa(port: number) {
+    this.app = new Koa();
+    await this.initFile();
+    // 根据保存的meta创建对应执行函数
+    for (const provideItem of this.provideGroup.values()) {
+      this.injectInit(provideItem.meta.inject, provideItem.cls);
+      this.koaRouterInit(provideItem.meta, provideItem.cls);
+    }
+    this.app.listen(port);
+  }
+
+  private async initFile() {
+    try {
+      await fs.statSync(this.initPath);
+      const cls = require(this.initPath);
+      if (isClass(cls.default)) {
+        const initCls = new cls.default();
+        await initCls.onReady(this, this.app);
+      }
+    } catch (err) {
+      console.log('没找到init文件');
+    }
+  }
+
   /** 迭代所有src下的ts文件初始化meta 和require 文件 */
   private expCls = (pathUrl: string, name: string, isDir: boolean) => {
     if (isDir) return;
@@ -74,38 +106,6 @@ export class Container {
       /** 注入 */
       clsObj[v] = providMeta.cls;
     });
-  }
-
-  private async initFile() {
-    try {
-      await fs.statSync(this.initPath);
-      const cls = require(this.initPath);
-      if (isClass(cls.default)) {
-        const initCls = new cls.default();
-        await initCls.onReady(this, this.app);
-      }
-    } catch (err) {
-      console.log('没找到init文件');
-    }
-  }
-
-  private async installKoa(port: number) {
-    this.app = new Koa();
-    await this.initFile();
-    // 根据保存的meta创建对应执行函数
-    for (const provideItem of this.provideGroup.values()) {
-      this.injectInit(provideItem.meta.inject, provideItem.cls);
-      this.koaRouterInit(provideItem.meta, provideItem.cls);
-    }
-    this.app.listen(port);
-  }
-
-  private async init() {
-    const args = getArg();
-    const port = await portIsOccupied(+args.port);
-    await loopDir(this.rootPath, this.expCls);
-    this.installKoa(port);
-    console.log(`http://localhost:${port}/`);
   }
 }
 
