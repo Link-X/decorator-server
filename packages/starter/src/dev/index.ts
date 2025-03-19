@@ -3,7 +3,7 @@ import Koa from 'koa';
 import fs from 'fs';
 
 import { assemble, isClass } from '@decorator-server/decorator';
-import { loopDir, portIsOccupied, getArg } from '../utils';
+import { loopDir, portIsOccupied, getArg, getLocalIP } from '../utils';
 import SetRouters from './set-router';
 
 export class Container {
@@ -25,6 +25,7 @@ export class Container {
     await loopDir(this.rootPath, this.expCls);
     this.installKoa(port);
     console.log(`http://localhost:${port}/`);
+    console.log(`http://${getLocalIP()}:${port}`);
   }
 
   private async installKoa(port: number) {

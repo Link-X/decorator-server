@@ -1,6 +1,7 @@
 import path from 'path';
 import net from 'net';
 import { walk } from '@root/walk';
+const ip = require('ip');
 
 export const loopDir = async (
   url: string,
@@ -25,9 +26,15 @@ export const loopDir = async (
   );
 };
 
+export function getLocalIP() {
+  return ip.address();
+}
+
 // 检测端口是否被占用
 export const portIsOccupied = async (port: number): Promise<number> => {
-  const ports = [9003,9024,8623,9910,6781,8230,7234,5082,4901,6582,4346]
+  const ports = [
+    9003, 9024, 8623, 9910, 6781, 8230, 7234, 5082, 4901, 6582, 4346,
+  ];
   const getOkPort = (port: number, res: any, rej: any) => {
     const server = net.createServer().listen(port);
 

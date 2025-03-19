@@ -3,6 +3,8 @@
 `git clone https://github.com/Link-X/decorator-server.git`  
 `cd decorator-server`  
 
+
+<!-- `yarn add rimraf  lerna@4 typescript@4.4.3 -g` -->
 `yarn install`  
 `yarn build`  
 
