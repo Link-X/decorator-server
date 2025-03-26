@@ -19,6 +19,7 @@ export default class SetResponse {
    */
   public modify(response: responseType[], ctx: Context): void {
     response.forEach((item) => {
+      console.log(item.type)
       const handler = this[item.type as keyof this];
       if (typeof handler === 'function') {
         try {

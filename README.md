@@ -13,7 +13,7 @@
 `cd packages/exp`  
 `yarn dev`  
 
-访问：http://localhost:9301  
+访问：http://localhost:xxx
 
 ##### base 基础示例
 ```javascript
@@ -124,12 +124,14 @@ import {
   Provide,
   Inject
 } from '@decorator-server/decorator'
+import { Context } from 'koa';
 class ddd {
   @Inject()
   abc;
 
-  func() {
+  func(ctx: Context) {
     this.abc.query()
+    console.log(ctx)
   }
 }
 

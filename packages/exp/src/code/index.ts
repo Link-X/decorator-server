@@ -11,6 +11,7 @@ import {
   Inject,
   Init,
 } from '@decorator-server/decorator';
+import { Context } from 'koa';
 
 import { first } from './utils/a';
 
@@ -39,8 +40,8 @@ export class SomeClass {
   @ContentType('text')
   @Redirect('/api/redirect')
   async someGetMethod() {
-    this.useTest.aaaa()
-    this.sequelize.query()
+    this.useTest.aaaa();
+    this.sequelize.query();
     const awaitFunc = () => {
       return new Promise((res) => {
         setTimeout(() => res('3s -- redirect'), 3000);
@@ -56,15 +57,17 @@ export class SomeClass {
   }
 
   @Get('/null')
-  getNull() {
-    console.log('/null')
+  getNull(params: any) {
+    console.log('/null', params);
   }
 
   @Post('/b')
   @ContentType('json')
-  somePostMethod(@Query() key: string) {
-    console.log(key, 'key');
-    return { a: 1, b: 3 };
+  somePostMethod(ctx: Context, a: string, @Query() b: string) {
+    console.log(ctx, 'ctx1')
+    console.log(a);
+    console.log(b);
+    ctx.response.body = { a: 2, b: 5 }
+    return ctx.response.body;
   }
 }
-

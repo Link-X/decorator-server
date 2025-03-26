@@ -28,7 +28,7 @@ export const loopDir = async (
         const { name } = dirent;
         const isDir = dirent.isDirectory();
         // 过滤掉 .d.ts 文件
-        if (name.includes('.d.ts')) {
+        if (name.includes('.d.ts') || !name.includes('.js')) {
           return;
         }
         cb(dirPath, name, isDir);
@@ -38,7 +38,6 @@ export const loopDir = async (
     console.error('遍历目录时出现错误:', error);
   }
 };
-
 
 // 获取本地 IP 地址
 export const getLocalIP = (): string => {
@@ -56,23 +55,25 @@ export const portIsOccupied = async (initialPort: number): Promise<number> => {
 
   for (const port of portQueue) {
     try {
-      await new Promise((resolve, reject) => {
-        const server = net.createServer();
-        server.on('error', (err: NodeJS.ErrnoException) => {
-          if (err.code === 'EADDRINUSE') {
-            console.log(`端口 ${port} 已被占用，尝试下一个端口`);
-            resolve(port);
-          } else {
-            reject(err);
-          }
-        });
-        server.on('listening', () => {
-          server.close(() => {
-            resolve(port);
+      if (port) {
+        await new Promise((resolve, reject) => {
+          const server = net.createServer();
+          server.on('error', (err: NodeJS.ErrnoException) => {
+            if (err.code === 'EADDRINUSE') {
+              console.log(`端口 ${port} 已被占用，尝试下一个端口`);
+              resolve(port);
+            } else {
+              reject(err);
+            }
           });
+          server.on('listening', () => {
+            server.close(() => {
+              resolve(port);
+            });
+          });
+          server.listen(port);
         });
-        server.listen(port);
-      });
+      }
       return port;
     } catch (error) {
       if ((error as NodeJS.ErrnoException).code !== 'EADDRINUSE') {

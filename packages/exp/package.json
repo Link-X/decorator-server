@@ -8,12 +8,16 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rimraf -rf ./lib",
-    "dev": "starter --port=9031 --debugger",
+    "dev": "starter --port=9031",
+    "start": "starter --watch --run --port=9031",
     "ind": "node ./lib/index.js"
   },
   "dependencies": {
     "@decorator-server/decorator": "^0.12.0",
     "@decorator-server/starter": "^0.12.0",
     "sequelize": "^6.7.0"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
   }
 }
