@@ -1,4 +1,6 @@
-使用装饰器启动 http 服务
+基于 TypeScript 开发，结合了面向对象（OOP + Class + IoC) ,提供简单、易用、可靠的 Node.js 服务端研发体验。
+
+
 #### 启动示例
 `git clone https://github.com/Link-X/decorator-server.git`  
 `cd decorator-server`  
