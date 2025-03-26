@@ -63,7 +63,7 @@ export class SomeClass {
   @Post('/b')
   @ContentType('json')
   somePostMethod(@Query() key: string) {
-    console.log(key);
+    console.log(key, 'key');
     return { a: 1, b: 3 };
   }
 }

@@ -1,44 +1,66 @@
-import "reflect-metadata";
-import { OBJ_DEF_CLS } from "../variable/meta-name";
+import 'reflect-metadata';
+import { OBJ_DEF_CLS } from '../variable/meta-name';
 
-/** 保存装饰器元数据 */
+/**
+ * 保存装饰器元数据
+ * @param target 目标对象或构造函数
+ * @param data 要保存的数据
+ * @param metaKey 元数据键
+ * @param propertyName 属性名
+ */
 export const saveMeta = (
   target: any,
   data: any,
   metaKey: string,
-  propertyName: string
-) => {
+  propertyName: string,
+): void => {
   const dataKey = `${metaKey}-${propertyName.toString()}`;
-  if (typeof target === "object" && target.constructor) {
+  // 确保 target 为构造函数
+  if (typeof target === 'object' && target.constructor) {
     target = target.constructor;
   }
-  let m: Map<string, any>;
+  let metaMap: Map<string, any[]>;
 
-  // 是否使用过相同的装饰器
+  // 检查是否已有相同元数据键的元数据
   if (Reflect.hasOwnMetadata(metaKey, target)) {
-    m = Reflect.getMetadata(metaKey, target);
+    metaMap = Reflect.getMetadata(metaKey, target);
   } else {
-    m = new Map<string, any>();
+    metaMap = new Map<string, any[]>();
   }
-  if (!m.has(dataKey)) {
-    m.set(dataKey, []);
+
+  // 若不存在对应 dataKey 的数据数组，则初始化
+  if (!metaMap.has(dataKey)) {
+    metaMap.set(dataKey, []);
   }
-  m.get(dataKey).push(data);
-  // 通过defineMetadata. 保存
-  Reflect.defineMetadata(metaKey, m, target);
+  // 将数据添加到对应数组中
+  metaMap.get(dataKey)?.push(data);
+
+  // 保存元数据
+  Reflect.defineMetadata(metaKey, metaMap, target);
 };
 
-/** 保存特数据装饰器元数据 */
-export function lifeCycle(target: any, props = {}) {
-   if (typeof target === "object" && target.constructor) {
+/**
+ * 保存特数据装饰器元数据
+ * @param target 目标对象或构造函数
+ * @param props 要保存的属性对象
+ * @returns 处理后的目标对象或构造函数
+ */
+export function lifeCycle(target: any, props: Record<string, any> = {}): any {
+  // 确保 target 为构造函数
+  if (typeof target === 'object' && target.constructor) {
     target = target.constructor;
   }
-  if (Reflect.hasMetadata(OBJ_DEF_CLS, target)) {
-    const originProps = Reflect.getMetadata(OBJ_DEF_CLS, target);
 
-    Reflect.defineMetadata(OBJ_DEF_CLS, Object.assign(originProps, props), target);
-  } else {
-    Reflect.defineMetadata(OBJ_DEF_CLS, props, target);
+  let originProps: Record<string, any> = {};
+  // 检查是否已有 OBJ_DEF_CLS 元数据
+  if (Reflect.hasMetadata(OBJ_DEF_CLS, target)) {
+    originProps = Reflect.getMetadata(OBJ_DEF_CLS, target);
   }
+
+  // 合并属性
+  const mergedProps = { ...originProps, ...props };
+
+  // 保存合并后的属性作为元数据
+  Reflect.defineMetadata(OBJ_DEF_CLS, mergedProps, target);
   return target;
 }
