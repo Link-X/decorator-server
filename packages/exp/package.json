@@ -8,8 +8,7 @@
   "scripts": {
     "build": "npm run clean && tsc",
     "clean": "rimraf -rf ./lib",
-    "dev": "starter --port=9031",
-    "start": "starter --watch --run --port=9031",
+    "dev": "starter --watch --run --port=9031",
     "ind": "node ./lib/index.js"
   },
   "dependencies": {
