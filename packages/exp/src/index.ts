@@ -1,5 +1,5 @@
 import { Get, Post, Controller, Provide, Inject } from '@decorator-server/decorator';
-import { Context } from 'koa';
+import type { Context } from 'koa';
 
 @Provide()
 export class Rmember {

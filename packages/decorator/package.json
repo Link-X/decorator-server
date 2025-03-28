@@ -24,7 +24,7 @@
     "dev": "npm run build && node ./exp"
   },
   "dependencies": {
-    "reflect-metadata": "^0.1.13"
+    "reflect-metadata": "^0.2.2"
   },
   "gitHead": "4d539723d929e5753a9d678dacddc0043e8d6acb"
 }
