@@ -1,0 +1,1 @@
+export const CHILD_PROCESS_EXCEPTION_EXIT_CODE = 10;

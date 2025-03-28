@@ -32,11 +32,20 @@
     "koa-body": "^4.2.0",
     "koa-compress": "^5.1.0",
     "koa-session": "^6.2.0",
-    "koa-static": "^5.0.0"
+    "koa-static": "^5.0.0",
+    "chokidar": "^3.6.0",
+    "cli-table3": "^0.6.5",
+    "compare-versions": "^6.1.0",
+    "source-map-support": "^0.5.21",
+    "tar": "^7.4.0",
+    "tsc-alias": "^1.8.8",
+    "picomatch": "^2.3.1"
   },
   "gitHead": "4d539723d929e5753a9d678dacddc0043e8d6acb",
   "devDependencies": {
     "@types/koa": "^2.13.4",
-    "@types/koa__router": "^8.0.8"
+    "@types/koa__router": "^8.0.8",
+    "node-fetch": "^2.7.0",
+    "typescript": "^5.4.5"
   }
 }
