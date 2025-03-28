@@ -1,25 +1,22 @@
 import path from 'path';
 import Koa from 'koa';
-import fs from 'fs/promises'; // 使用 promise 版本的 fs 模块
 
-import { assemble, isClass } from '@decorator-server/decorator';
-import { loopDir, portIsOccupied, getArg, getLocalIP } from '../utils';
+import { portIsOccupied, getArg, getLocalIP } from '../utils';
 import SetRouters from './set-router';
+import loadInitFile from './load-init-file';
+import metaDataController from './meta-data-controller';
 
 export class Container {
-  // 存储提供的类和元数据
-  public provideGroup = new Map<string, itemType>();
-  // 存储全局注入的对象
-  public globalInject = new Map<string, any>();
-  public app: Koa;
+  public app = new Koa();
   // 项目根路径
   public rootPath = path.resolve(process.cwd(), 'lib');
   // 初始化文件路径
   public initPath = path.resolve(this.rootPath, 'init.js');
-  private setRouters: SetRouters;
+  private loadInitFile = new loadInitFile();
+  private metaDataController = new metaDataController();
+  private setRouters = new SetRouters();
 
-  constructor(res: SetRouters) {
-    this.setRouters = res;
+  constructor() {
     this.init().catch((error) => {
       console.error('初始化过程中出现严重错误:', error);
     });
@@ -27,10 +24,11 @@ export class Container {
 
   private async init() {
     const args = getArg();
-    const port = await this.ensurePortIsAvailable(Object.keys(args)[0] as string);
-    await this.loadClassesFromDirectory();
+    const port = await this.ensurePortIsAvailable(
+      Object.keys(args)[0] as string,
+    );
+    await this.metaDataController.loadClassesFromDirectory(this.rootPath);
     await this.setupKoaServer(port);
-    this.logServerUrls(port);
   }
 
   private async ensurePortIsAvailable(port: string | number) {
@@ -43,37 +41,14 @@ export class Container {
     }
   }
 
-  private async loadClassesFromDirectory() {
-    try {
-      await loopDir(this.rootPath, this.expCls.bind(this));
-    } catch (error) {
-      console.error('遍历目录加载类时出错:', error);
-      throw new Error('无法加载类');
-    }
-  }
-
   private async setupKoaServer(port: number) {
-    this.app = new Koa();
-    await this.loadInitFile();
+    await this.loadInitFile.executeInitFile.call(this);
     this.configureDependenciesAndRoutes();
     await this.startKoaServer(port);
   }
 
-  private async loadInitFile() {
-    try {
-      await fs.access(this.initPath);
-      const { default: cls } = await import(this.initPath);
-      if (isClass(cls)) {
-        const initCls = new cls();
-        await initCls.onReady(this, this.app);
-      }
-    } catch (err) {
-      console.log('没找到 init 文件');
-    }
-  }
-
   private configureDependenciesAndRoutes() {
-    for (const provideItem of this.provideGroup.values()) {
+    for (const provideItem of this.metaDataController.provideGroup.values()) {
       this.injectDependencies(provideItem.meta.inject, provideItem.cls);
       this.setupKoaRouter(provideItem.meta, provideItem.cls);
     }
@@ -83,6 +58,7 @@ export class Container {
     return new Promise((resolve) => {
       this.app.listen(port, () => {
         console.log(`服务器已启动，监听端口: ${port}`);
+        this.logServerUrls(port);
         resolve(port);
       });
     });
@@ -96,38 +72,10 @@ export class Container {
     }
   }
 
-  /** 迭代所有 src 下的 ts 文件初始化 meta 和 require 文件 */
-  private expCls = async (pathUrl: string, name: string, isDir: boolean) => {
-    if (isDir) return;
-    const filePath = path.resolve(pathUrl, name);
-    if (this.initPath === filePath) {
-      return;
-    }
-    try {
-      const module = await import(filePath);
-      const values = Object.values(module);
-      values.forEach((v) => {
-        if (isClass(v)) {
-          this.provideBind(v);
-        }
-      });
-    } catch (error) {
-      console.error(`加载文件 ${filePath} 时出错:`, error);
-    }
-  };
-
-  private provideBind(cls: any) {
-    const meta = assemble(cls);
-    if (!meta) return;
-    this.provideGroup.set(meta.base.id, { cls: new cls(), meta });
-  }
-
   /** 注册全局依赖 api, 这个 api 只在 init.ts 的 onReady 内有效 */
   public registerObject(identifier: string, target: any, params?: any) {
-    if (!isClass(target)) {
-      throw new Error(`${identifier}: 不是一个 class 无法注册`);
-    }
-    this.globalInject.set(`globalInject-${identifier}`, new target(params));
+    console.log(identifier, 'debugger-xdb');
+    return this.metaDataController.registerObject(identifier, target, params);
   }
 
   /** 初始化 koa router */
@@ -142,11 +90,13 @@ export class Container {
     if (!inject) return;
     Object.keys(inject).forEach((v) => {
       const item = inject[v][0];
-      const providMeta = this.provideGroup.get(item.injectVal) as itemType;
+      const providMeta = this.metaDataController.provideGroup.get(
+        item.injectVal,
+      ) as itemType;
 
       /** 没有在 provdeGroup 找到的话可能是全局依赖 */
       if (!providMeta) {
-        const globalInjectCls = this.globalInject.get(
+        const globalInjectCls = this.metaDataController.globalInject.get(
           `globalInject-${item.injectVal}`,
         );
         clsObj[v] = globalInjectCls;
@@ -161,4 +111,4 @@ export class Container {
 // export default () => {
 
 // };
-new Container(new SetRouters());
+new Container();
